@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator, Alert, Pressable } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
-import { fetchLessonById } from '../../services/api';
+import { fetchLessonById, createBooking } from '../../services/api';
 
 export default function LessonDetails() {
   const { id } = useLocalSearchParams();
@@ -23,6 +23,16 @@ export default function LessonDetails() {
   useEffect(() => {
     if (id) loadLesson();
   }, [id]);
+
+  const handleBookLesson = async () => {
+    try {
+      await createBooking(id);
+      Alert.alert('Success', 'Lesson booked successfully!');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Something went wrong';
+      Alert.alert('Error', message);
+    }
+  };
 
   return (
     <View
@@ -83,6 +93,21 @@ export default function LessonDetails() {
           <Text style={{ color: '#22c55e', fontSize: 16, fontWeight: 'bold' }}>
             {lesson.price_coins} coins
           </Text>
+
+          <Pressable
+            onPress={handleBookLesson}
+            style={{
+              backgroundColor: '#06b6d4',
+              padding: 14,
+              borderRadius: 12,
+              alignItems: 'center',
+              marginTop: 20,
+            }}
+          >
+            <Text style={{ color: '#000', fontWeight: 'bold' }}>
+              Book this lesson
+            </Text>
+          </Pressable>
         </View>
       ) : (
         <Text style={{ color: 'white' }}>Lesson not found.</Text>

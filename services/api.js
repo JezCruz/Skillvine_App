@@ -44,3 +44,24 @@ export async function fetchLessonById(id) {
 
   return data;
 }
+
+export async function createBooking(lessonId) {
+  const token = await SecureStore.getItemAsync("access");
+
+  const res = await fetch(`${API_BASE}/bookings/create/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ lesson: lessonId }),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.error || "Failed to create booking");
+  }
+
+  return data;
+}
