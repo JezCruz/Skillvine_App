@@ -2,6 +2,28 @@ import * as SecureStore from 'expo-secure-store';
 
 const API_BASE = "http://192.168.100.25:8000/api";
 
+export async function fetchProfile() {
+  const token = await SecureStore.getItemAsync("access");
+
+  const res = await fetch(`${API_BASE}/profile/`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch profile");
+  }
+
+  return data;
+}
+
+export async function getStoredToken() {
+  return await SecureStore.getItemAsync('access');
+}
+
 export async function loginUser(username, password) {
   const res = await fetch(`${API_BASE}/login/`, {
     method: "POST",
@@ -64,4 +86,66 @@ export async function createBooking(lessonId) {
   }
 
   return data;
+}
+
+export async function fetchMyBookings() {
+  const token = await SecureStore.getItemAsync("access");
+
+  const res = await fetch(`${API_BASE}/my-bookings/`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch bookings");
+  }
+
+  return data;
+}
+
+export async function fetchTeacherBookings() {
+  const token = await SecureStore.getItemAsync("access");
+
+  const res = await fetch(`${API_BASE}/teacher-bookings/`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch teacher bookings");
+  }
+
+  return data;
+}
+
+export async function updateBookingStatus(id, status) {
+  const token = await SecureStore.getItemAsync("access");
+
+  const res = await fetch(`${API_BASE}/booking/${id}/update/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ status }),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.error || "Failed to update booking");
+  }
+
+  return data;
+}
+
+export async function logoutUser() {
+  await SecureStore.deleteItemAsync('access');
+  await SecureStore.deleteItemAsync('refresh');
 }

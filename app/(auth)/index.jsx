@@ -1,11 +1,49 @@
-import { useState } from 'react';
-import { View, Text, TextInput, Pressable, Alert } from 'react-native';
-import { loginUser } from '../services/api';
+import { useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
+import { router } from 'expo-router';
+import { loginUser, getStoredToken } from '../../services/api';
 
 export default function LoginScreen() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const checkAuth = async () => {
+      try {
+        const token = await getStoredToken();
+
+        if (!mounted) return;
+
+        if (token) {
+          router.replace('/home');
+          return;
+        }
+      } catch (error) {
+        console.log('Auth check error:', error);
+      } finally {
+        if (mounted) {
+          setCheckingAuth(false);
+        }
+      }
+    };
+
+    checkAuth();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const handleLogin = async () => {
     if (!username || !password) {
@@ -16,13 +54,29 @@ export default function LoginScreen() {
     try {
       setLoading(true);
       await loginUser(username, password);
-      Alert.alert('Success', 'Logged in!');
+      router.replace('/home');
     } catch (err) {
-      Alert.alert('Login failed', err.message);
+      const message = err instanceof Error ? err.message : 'Something went wrong';
+      Alert.alert('Login failed', message);
     } finally {
       setLoading(false);
     }
   };
+
+  if (checkingAuth) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: '#020617',
+        }}
+      >
+        <ActivityIndicator size="large" color="#06b6d4" />
+      </View>
+    );
+  }
 
   return (
     <View

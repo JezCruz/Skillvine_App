@@ -1,0 +1,100 @@
+import { useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  FlatList,
+  ActivityIndicator,
+  Alert,
+  Pressable,
+} from 'react-native';
+import { router } from 'expo-router';
+import { fetchMyBookings } from '../../services/api';
+
+export default function MyBookings() {
+  const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const loadBookings = async () => {
+    try {
+      const data = await fetchMyBookings();
+      setBookings(data);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Something went wrong';
+      Alert.alert('Error', message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadBookings();
+  }, []);
+
+  return (
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: '#020617',
+        paddingTop: 60,
+        paddingHorizontal: 16,
+      }}
+    >
+      <Text
+        style={{
+          color: 'white',
+          fontSize: 26,
+          fontWeight: 'bold',
+          marginBottom: 20,
+        }}
+      >
+        My Bookings
+      </Text>
+
+      <Pressable
+        onPress={() => router.replace('/home')}
+        style={{
+          backgroundColor: '#1e293b',
+          padding: 10,
+          borderRadius: 10,
+          marginBottom: 20,
+          alignSelf: 'flex-start',
+        }}
+      >
+        <Text style={{ color: 'white' }}>Back</Text>
+      </Pressable>
+
+      {loading ? (
+        <ActivityIndicator size="large" color="#06b6d4" />
+      ) : bookings.length === 0 ? (
+        <Text style={{ color: '#94a3b8' }}>No bookings yet.</Text>
+      ) : (
+        <FlatList
+          data={bookings}
+          keyExtractor={(item) => String(item.id)}
+          renderItem={({ item }) => (
+            <View
+              style={{
+                backgroundColor: '#111827',
+                padding: 16,
+                borderRadius: 14,
+                marginBottom: 12,
+              }}
+            >
+              <Text style={{ color: 'white', fontSize: 16, fontWeight: 'bold' }}>
+                Lesson ID: {item.lesson}
+              </Text>
+
+              <Text style={{ color: '#cbd5e1', marginTop: 6 }}>
+                Status: {item.status}
+              </Text>
+
+              <Text style={{ color: '#64748b', marginTop: 4 }}>
+                {new Date(item.created_at).toLocaleString()}
+              </Text>
+            </View>
+          )}
+        />
+      )}
+    </View>
+  );
+}

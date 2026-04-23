@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator, Alert, Pressable } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
-import { fetchLessonById, createBooking } from '../../services/api';
+import { fetchLessonById, createBooking } from '../../../services/api';
 
 export default function LessonDetails() {
   const { id } = useLocalSearchParams();
