@@ -33,3 +33,14 @@ export async function fetchLessons() {
 
   return data;
 }
+
+export async function fetchLessonById(id) {
+  const res = await fetch(`${API_BASE}/lessons/${id}/`);
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch lesson details");
+  }
+
+  return data;
+}

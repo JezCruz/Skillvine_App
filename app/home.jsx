@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { View, Text, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, Pressable } from 'react-native';
 import { fetchLessons } from '../services/api';
+import { router } from 'expo-router';
 
 export default function Home() {
   const [lessons, setLessons] = useState([]);
@@ -49,33 +50,36 @@ export default function Home() {
           data={lessons}
           keyExtractor={(item) => String(item.id)}
           renderItem={({ item }) => (
-            <View
-              style={{
+          <Pressable
+            onPress={() => router.push(`/lesson/${item.id}`)}
+            android_ripple={{ color: '#1f2937' }}
+            style={({ pressed }) => ({
                 backgroundColor: '#111827',
                 padding: 16,
                 borderRadius: 14,
                 marginBottom: 12,
-              }}
+                opacity: pressed ? 0.85 : 1,
+            })}
             >
-              <Text
-                style={{
-                  color: 'white',
-                  fontSize: 18,
-                  fontWeight: 'bold',
-                  marginBottom: 6,
-                }}
-              >
-                {item.title}
-              </Text>
+            <Text
+            style={{
+                color: 'white',
+                fontSize: 18,
+                fontWeight: 'bold',
+                marginBottom: 6,
+            }}
+            >
+            {item.title}
+            </Text>
 
-              <Text style={{ color: '#cbd5e1', marginBottom: 6 }}>
-                {item.description}
-              </Text>
+            <Text style={{ color: '#cbd5e1', marginBottom: 6 }}>
+            {item.description}
+            </Text>
 
-              <Text style={{ color: '#22c55e' }}>
-                {item.price_coins} coins
-              </Text>
-            </View>
+            <Text style={{ color: '#22c55e' }}>
+            {item.price_coins} coins
+            </Text>
+          </Pressable>
           )}
         />
       )}
