@@ -80,15 +80,23 @@ export default function MyBookings() {
                 marginBottom: 12,
               }}
             >
-              <Text style={{ color: 'white', fontSize: 16, fontWeight: 'bold' }}>
-                Lesson ID: {item.lesson}
+              <Text style={{ color: 'white', fontSize: 18, fontWeight: 'bold' }}>
+                {item.lesson_title}
               </Text>
 
               <Text style={{ color: '#cbd5e1', marginTop: 6 }}>
+                Teacher: {item.teacher_username}
+              </Text>
+
+              <Text style={{ color: '#22c55e', marginTop: 6 }}>
+                Price: {item.lesson_price} coins
+              </Text>
+
+              <Text style={{ color: '#facc15', marginTop: 6 }}>
                 Status: {item.status}
               </Text>
 
-              <Text style={{ color: '#64748b', marginTop: 4 }}>
+              <Text style={{ color: '#64748b', marginTop: 6 }}>
                 {new Date(item.created_at).toLocaleString()}
               </Text>
             </View>
