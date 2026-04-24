@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator, Alert, Pressable } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { fetchLessonById, createBooking } from '../../../services/api';
+import AppButton from '../../../components/AppButton';
 
 export default function LessonDetails() {
   const { id } = useLocalSearchParams();
@@ -117,22 +118,12 @@ export default function LessonDetails() {
             {lesson.price_coins} coins
           </Text>
 
-          <Pressable
+          <AppButton
+            title={bookingLoading ? 'Booking...' : 'Book this lesson'}
             onPress={handleBookLesson}
             disabled={bookingLoading}
-            style={{
-              backgroundColor: bookingLoading ? '#64748b' : '#06b6d4',
-              padding: 14,
-              borderRadius: 12,
-              alignItems: 'center',
-              marginTop: 20,
-              opacity: bookingLoading ? 0.7 : 1,
-            }}
-          >
-            <Text style={{ color: '#000', fontWeight: 'bold' }}>
-              {bookingLoading ? 'Booking...' : 'Book this lesson'}
-            </Text>
-          </Pressable>
+            style={{ marginTop: 20 }}
+          />
         </View>
       ) : (
         <Text style={{ color: 'white' }}>Lesson not found.</Text>

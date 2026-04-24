@@ -1,8 +1,7 @@
 import { fetchTeacherBookings, updateBookingStatus } from '../../services/api';
 import { useEffect, useState } from 'react';
-import { View, Text, FlatList, ActivityIndicator, Pressable, Alert } from 'react-native';
-import { router } from 'expo-router';
-
+import { View, Text, FlatList, ActivityIndicator, Alert } from 'react-native';
+import AppButton from '../../components/AppButton';
 
 export default function TeacherBookings() {
   const [bookings, setBookings] = useState([]);
@@ -89,58 +88,25 @@ export default function TeacherBookings() {
               </Text>
 
               {item.status === 'pending' && (
-                <View style={{ flexDirection: 'row', marginTop: 10, gap: 10 }}>
-                  <Pressable
-                    onPress={() => handleUpdate(item.id, 'approved')}
-                    style={{
-                      backgroundColor: '#22c55e',
-                      padding: 10,
-                      borderRadius: 8,
-                    }}
-                  >
-                    <Text style={{ color: 'black', fontWeight: 'bold' }}>Approve</Text>
-                  </Pressable>
 
-                  <Pressable
-                    onPress={() => handleUpdate(item.id, 'declined')}
-                    style={{
-                      backgroundColor: '#ef4444',
-                      padding: 10,
-                      borderRadius: 8,
-                    }}
-                  >
-                    <Text style={{ color: 'white', fontWeight: 'bold' }}>Decline</Text>
-                  </Pressable>
-
-                  <Pressable
+                <View style={{ flexDirection: 'row', marginTop: 10 }}>
+                  <AppButton
+                    title={updatingId === item.id ? 'Updating...' : 'Approve'}
                     onPress={() => handleUpdate(item.id, 'approved')}
                     disabled={updatingId === item.id}
-                    style={{
-                      backgroundColor: updatingId === item.id ? '#64748b' : '#22c55e',
-                      padding: 10,
-                      borderRadius: 8,
-                    }}
-                  >
-                    <Text style={{ color: 'black', fontWeight: 'bold' }}>
-                      {updatingId === item.id ? 'Updating...' : 'Approve'}
-                    </Text>
-                  </Pressable>
+                    variant="success"
+                    style={{ flex: 1, marginRight: 8 }}
+                  />
 
-                  <Pressable
+                  <AppButton
+                    title={updatingId === item.id ? 'Updating...' : 'Decline'}
                     onPress={() => handleUpdate(item.id, 'declined')}
                     disabled={updatingId === item.id}
-                    style={{
-                      backgroundColor: updatingId === item.id ? '#64748b' : '#ef4444',
-                      padding: 10,
-                      borderRadius: 8,
-                    }}
-                  >
-                    <Text style={{ color: 'white', fontWeight: 'bold' }}>
-                      {updatingId === item.id ? 'Updating...' : 'Decline'}
-                    </Text>
-                  </Pressable>
-
+                    variant="danger"
+                    style={{ flex: 1 }}
+                  />
                 </View>
+
               )}
             </View>
           )}
