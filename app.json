@@ -2,6 +2,7 @@
   "expo": {
     "name": "skillvine-app",
     "slug": "skillvine-app",
+    "backgroundColor": "#020617",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",

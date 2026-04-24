@@ -41,5 +41,9 @@ export default function RootLayout() {
     );
   }
 
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return (
+    <View style={{ flex: 1, backgroundColor: '#020617' }}>
+      <Stack screenOptions={{ headerShown: false }} />
+    </View>
+  );
 }

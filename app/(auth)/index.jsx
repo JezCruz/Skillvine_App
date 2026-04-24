@@ -8,6 +8,8 @@ import {
   ActivityIndicator,
   Keyboard,
   TouchableWithoutFeedback,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { router } from 'expo-router';
 import { loginUser, getStoredToken } from '../../services/api';
@@ -81,69 +83,84 @@ export default function LoginScreen() {
   }
 
   return (
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <View
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            padding: 24,
-            backgroundColor: '#0f172a',
-          }}
-        >
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={0}
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          padding: 24,
+          backgroundColor: '#020617',
+        }}
+      >
         <Text
           style={{
             fontSize: 28,
             fontWeight: 'bold',
             color: 'white',
-            marginBottom: 20,
+            marginBottom: 8,
           }}
         >
-          Skillvine Login
+          Skillvine
+        </Text>
+
+        <Text
+          style={{
+            color: '#94a3b8',
+            marginBottom: 24,
+          }}
+        >
+          Login to continue
         </Text>
 
         <TextInput
           placeholder="Username"
-          placeholderTextColor="#aaa"
+          placeholderTextColor="#94a3b8"
           value={username}
           onChangeText={setUsername}
+          autoCapitalize="none"
           style={{
             backgroundColor: '#1e293b',
             color: 'white',
-            padding: 12,
-            borderRadius: 10,
-            marginBottom: 10,
+            padding: 14,
+            borderRadius: 12,
+            marginBottom: 12,
           }}
         />
 
         <TextInput
           placeholder="Password"
-          placeholderTextColor="#aaa"
+          placeholderTextColor="#94a3b8"
           secureTextEntry
           value={password}
           onChangeText={setPassword}
+          autoCapitalize="none"
           style={{
             backgroundColor: '#1e293b',
             color: 'white',
-            padding: 12,
-            borderRadius: 10,
-            marginBottom: 15,
+            padding: 14,
+            borderRadius: 12,
+            marginBottom: 16,
           }}
         />
 
         <Pressable
           onPress={handleLogin}
+          disabled={loading}
           style={{
-            backgroundColor: '#06b6d4',
+            backgroundColor: loading ? '#64748b' : '#06b6d4',
             padding: 14,
-            borderRadius: 10,
+            borderRadius: 12,
             alignItems: 'center',
+            opacity: loading ? 0.7 : 1,
           }}
         >
           <Text style={{ color: '#000', fontWeight: 'bold' }}>
             {loading ? 'Logging in...' : 'Login'}
           </Text>
         </Pressable>
-      </View>
+      </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
 }
