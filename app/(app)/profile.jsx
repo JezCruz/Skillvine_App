@@ -31,13 +31,7 @@ export default function Profile() {
       {loading ? (
         <ActivityIndicator size="large" color="#06b6d4" />
       ) : profile ? (
-        <View
-          style={{
-            backgroundColor: '#111827',
-            padding: 18,
-            borderRadius: 16,
-          }}
-        >
+        <View style={{ backgroundColor: '#111827', padding: 18, borderRadius: 16 }}>
           <Text style={{ color: 'white', fontSize: 18, marginBottom: 10 }}>
             Username: {profile.username}
           </Text>
