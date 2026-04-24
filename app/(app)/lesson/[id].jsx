@@ -7,6 +7,7 @@ export default function LessonDetails() {
   const { id } = useLocalSearchParams();
   const [lesson, setLesson] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [bookingLoading, setBookingLoading] = useState(false);
 
   const loadLesson = async () => {
     try {
@@ -25,6 +26,10 @@ export default function LessonDetails() {
   }, [id]);
 
   const handleBookLesson = async () => {
+    if (bookingLoading) return;
+
+    setBookingLoading(true);
+
     try {
       await createBooking(Number(id));
       Alert.alert('Success', 'Booking request sent!');
@@ -47,6 +52,8 @@ export default function LessonDetails() {
       }
 
       Alert.alert('Booking failed', message);
+    } finally {
+      setBookingLoading(false);
     }
   };
 
@@ -112,16 +119,18 @@ export default function LessonDetails() {
 
           <Pressable
             onPress={handleBookLesson}
+            disabled={bookingLoading}
             style={{
-              backgroundColor: '#06b6d4',
+              backgroundColor: bookingLoading ? '#64748b' : '#06b6d4',
               padding: 14,
               borderRadius: 12,
               alignItems: 'center',
               marginTop: 20,
+              opacity: bookingLoading ? 0.7 : 1,
             }}
           >
             <Text style={{ color: '#000', fontWeight: 'bold' }}>
-              Book this lesson
+              {bookingLoading ? 'Booking...' : 'Book this lesson'}
             </Text>
           </Pressable>
         </View>
