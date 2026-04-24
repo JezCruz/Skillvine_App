@@ -7,6 +7,7 @@ import { router } from 'expo-router';
 export default function TeacherBookings() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [updatingId, setUpdatingId] = useState(null);
 
   const loadBookings = async () => {
     try {
@@ -25,13 +26,19 @@ export default function TeacherBookings() {
   }, []);
 
   const handleUpdate = async (id, status) => {
+    if (updatingId) return;
+
+    setUpdatingId(id);
+
     try {
       await updateBookingStatus(id, status);
       Alert.alert('Success', `Booking ${status}`);
-      loadBookings(); // refresh list
+      loadBookings();
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Error';
-      Alert.alert('Error', msg);
+      const message = err instanceof Error ? err.message : 'Error';
+      Alert.alert('Error', message);
+    } finally {
+      setUpdatingId(null);
     }
   };
 
@@ -95,6 +102,35 @@ export default function TeacherBookings() {
                   >
                     <Text style={{ color: 'white', fontWeight: 'bold' }}>Decline</Text>
                   </Pressable>
+
+                  <Pressable
+                    onPress={() => handleUpdate(item.id, 'approved')}
+                    disabled={updatingId === item.id}
+                    style={{
+                      backgroundColor: updatingId === item.id ? '#64748b' : '#22c55e',
+                      padding: 10,
+                      borderRadius: 8,
+                    }}
+                  >
+                    <Text style={{ color: 'black', fontWeight: 'bold' }}>
+                      {updatingId === item.id ? 'Updating...' : 'Approve'}
+                    </Text>
+                  </Pressable>
+
+                  <Pressable
+                    onPress={() => handleUpdate(item.id, 'declined')}
+                    disabled={updatingId === item.id}
+                    style={{
+                      backgroundColor: updatingId === item.id ? '#64748b' : '#ef4444',
+                      padding: 10,
+                      borderRadius: 8,
+                    }}
+                  >
+                    <Text style={{ color: 'white', fontWeight: 'bold' }}>
+                      {updatingId === item.id ? 'Updating...' : 'Decline'}
+                    </Text>
+                  </Pressable>
+                  
                 </View>
               )}
             </View>
