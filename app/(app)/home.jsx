@@ -7,6 +7,7 @@ export default function Home() {
   const [lessons, setLessons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [role, setRole] = useState(null);
+  const [profile, setProfile] = useState(null);
 
   const loadData = async () => {
     try {
@@ -15,6 +16,7 @@ export default function Home() {
 
       setLessons(lessonsData);
       setRole(profileData.role);
+      setProfile(profileData);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Something went wrong';
       console.log(message);
@@ -46,6 +48,12 @@ export default function Home() {
       >
         Skillvine Lessons
       </Text>
+
+      {profile && (
+        <Text style={{ color: '#22c55e', marginBottom: 16 }}>
+          Coins: {profile.coins}
+        </Text>
+      )}
 
       {role === 'student' && (
         <Pressable
