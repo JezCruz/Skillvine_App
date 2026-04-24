@@ -2,6 +2,7 @@ import { fetchTeacherBookings, updateBookingStatus } from '../../services/api';
 import { useEffect, useState } from 'react';
 import { View, Text, FlatList, ActivityIndicator, Alert } from 'react-native';
 import AppButton from '../../components/AppButton';
+import Toast from 'react-native-toast-message';
 
 export default function TeacherBookings() {
   const [bookings, setBookings] = useState([]);
@@ -38,11 +39,21 @@ export default function TeacherBookings() {
 
     try {
       await updateBookingStatus(id, status);
-      Alert.alert('Success', `Booking ${status}`);
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: status === 'approved'
+          ? 'Student has been approved'
+          : 'Booking declined',
+      });
       loadBookings();
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Error';
-      Alert.alert('Error', message);
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: message,
+      });
     } finally {
       setUpdatingId(null);
     }
