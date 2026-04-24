@@ -2,6 +2,7 @@ import { Stack, router, useSegments } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { getStoredToken } from '../services/api';
+import Toast from 'react-native-toast-message';
 
 export default function RootLayout() {
   const [loading, setLoading] = useState(true);
@@ -44,6 +45,7 @@ export default function RootLayout() {
   return (
     <View style={{ flex: 1, backgroundColor: '#020617' }}>
       <Stack screenOptions={{ headerShown: false }} />
+      <Toast />
     </View>
   );
 }
