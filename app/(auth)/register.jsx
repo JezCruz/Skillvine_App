@@ -20,8 +20,43 @@ export default function RegisterScreen() {
   const [password2, setPassword2] = useState('');
   const [loading, setLoading] = useState(false);
   const [role, setRole] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+
+  const getPasswordStrength = (password) => {
+    let score = 0;
+
+    if (password.length >= 8) score++;
+    if (/[A-Z]/.test(password)) score++;
+    if (/[0-9]/.test(password)) score++;
+    if (/[^A-Za-z0-9]/.test(password)) score++;
+
+    if (score <= 1) return 'weak';
+    if (score <= 3) return 'medium';
+    return 'strong';
+  };
 
   const handleRegister = async () => {
+    const strength = getPasswordStrength(password);
+
+    if (strength === 'weak') {
+      Toast.show({
+        type: 'error',
+        text1: 'Weak password',
+        text2: 'Use at least 8 chars, uppercase, number, or symbol.',
+      });
+      return;
+    }
+
+    if (password !== password2) {
+      Toast.show({
+        type: 'error',
+        text1: 'Password mismatch',
+        text2: 'Passwords do not match.',
+      });
+      return;
+    }
+
     if (!username || !password || !password2) {
       Toast.show({
         type: 'error',
@@ -65,6 +100,16 @@ export default function RegisterScreen() {
     }
   };
 
+  const strength = getPasswordStrength(password);
+  const canRegister =
+    username &&
+    password &&
+    password2 &&
+    role &&
+    password === password2 &&
+    strength !== 'weak' &&
+    !loading;
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView
@@ -96,23 +141,76 @@ export default function RegisterScreen() {
           style={inputStyle}
         />
 
-        <TextInput
-          placeholder="Password"
-          placeholderTextColor="#94a3b8"
-          secureTextEntry
-          value={password}
-          onChangeText={setPassword}
-          style={inputStyle}
-        />
+        <View style={{ position: 'relative' }}>
+          <TextInput
+            placeholder="Password"
+            placeholderTextColor="#94a3b8"
+            secureTextEntry={!showPassword}
+            value={password}
+            onChangeText={setPassword}
+            autoCapitalize="none"
+            style={[inputStyle, { paddingRight: 50 }]}
+          />
 
-        <TextInput
-          placeholder="Confirm Password"
-          placeholderTextColor="#94a3b8"
-          secureTextEntry
-          value={password2}
-          onChangeText={setPassword2}
-          style={inputStyle}
-        />
+          <Pressable
+            onPress={() => setShowPassword(!showPassword)}
+            style={{ position: 'absolute', right: 14, top: 14 }}
+          >
+            <Text style={{ color: 'white' }}>{showPassword ? '🙈' : '👁'}</Text>
+          </Pressable>
+        </View>
+
+        {password.length > 0 && (
+          <Text
+            style={{
+              marginBottom: 12,
+              color:
+                getPasswordStrength(password) === 'weak'
+                  ? '#ef4444'
+                  : getPasswordStrength(password) === 'medium'
+                  ? '#facc15'
+                  : '#22c55e',
+            }}
+          >
+            {getPasswordStrength(password) === 'weak'
+              ? 'Weak 🔴'
+              : getPasswordStrength(password) === 'medium'
+              ? 'Medium 🟡'
+              : 'Strong 🟢'}
+          </Text>
+        )}
+
+        <View style={{ position: 'relative' }}>
+          <TextInput
+            placeholder="Confirm Password"
+            placeholderTextColor="#94a3b8"
+            secureTextEntry={!showConfirm}
+            value={password2}
+            onChangeText={setPassword2}
+            autoCapitalize="none"
+            style={[inputStyle, { paddingRight: 50 }]}
+          />
+
+          <Pressable
+            onPress={() => setShowConfirm(!showConfirm)}
+            style={{ position: 'absolute', right: 14, top: 14 }}
+          >
+            <Text style={{ color: 'white' }}>{showConfirm ? '🙈' : '👁'}</Text>
+          </Pressable>
+        </View>
+
+        {password2.length > 0 && (
+          <Text
+            style={{
+              marginBottom: 12,
+              color: password === password2 ? '#22c55e' : '#ef4444',
+            }}
+          >
+            {password === password2
+              ? 'Passwords match ✅'
+              : 'Passwords do not match ❌'}
+          </Text>
+        )}
 
         <View style={{ flexDirection: 'row', marginBottom: 16 }}>
             <Pressable
@@ -120,7 +218,8 @@ export default function RegisterScreen() {
                 style={{
                 flex: 1,
                 backgroundColor: role === 'student' ? '#06b6d4' : '#1e293b',
-                borderColor: role === 'student' ? '#22d3ee' : '#334155',
+                borderWidth: 1,
+                borderColor: role === 'student' ? '#ffffff' : '#334155',
                 padding: 12,
                 borderRadius: 10,
                 marginRight: 8,
@@ -137,7 +236,8 @@ export default function RegisterScreen() {
                 style={{
                 flex: 1,
                 backgroundColor: role === 'teacher' ? '#06b6d4' : '#1e293b',
-                borderColor: role === 'student' ? '#22d3ee' : '#334155',
+                borderWidth: 1,
+                borderColor: role === 'teacher' ? '#ffffff' : '#334155',
                 padding: 12,
                 borderRadius: 10,
                 alignItems: 'center',
@@ -151,23 +251,18 @@ export default function RegisterScreen() {
 
         <Pressable
           onPress={handleRegister}
-          disabled={loading}
+          disabled={!canRegister}
           style={{
-            backgroundColor: loading ? '#64748b' : '#06b6d4',
+            backgroundColor: !canRegister ? '#3e4d63' : '#06b6d4', borderWidth: 0.5, borderColor: '#ffffff',
             padding: 14,
             borderRadius: 12,
             alignItems: 'center',
+            opacity: !canRegister ? 0.7 : 1,
           }}
         >
           <Text style={{ color: '#000', fontWeight: 'bold' }}>
             {loading ? 'Creating...' : 'Register'}
           </Text>
-        </Pressable>
-
-        <Pressable onPress={() => router.replace('/')}>
-            <Text style={{ color: '#38bdf8', marginTop: 16 }}>
-                Already have an account? Login
-            </Text>
         </Pressable>
 
       </KeyboardAvoidingView>
