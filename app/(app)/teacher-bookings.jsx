@@ -1,17 +1,8 @@
+import { fetchTeacherBookings, updateBookingStatus } from '../../services/api';
 import { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  FlatList,
-  ActivityIndicator,
-  Pressable,
-  Alert,
-} from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, Pressable, Alert } from 'react-native';
 import { router } from 'expo-router';
-import {
-  fetchTeacherBookings,
-  updateBookingStatus,
-} from '../../services/api';
+
 
 export default function TeacherBookings() {
   const [bookings, setBookings] = useState([]);
@@ -22,8 +13,8 @@ export default function TeacherBookings() {
       const data = await fetchTeacherBookings();
       setBookings(data);
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Something went wrong';
-      Alert.alert('Error', message);
+      const msg = err instanceof Error ? err.message : 'Error';
+      Alert.alert('Error', msg);
     } finally {
       setLoading(false);
     }
@@ -37,52 +28,21 @@ export default function TeacherBookings() {
     try {
       await updateBookingStatus(id, status);
       Alert.alert('Success', `Booking ${status}`);
-
-      // reload list
-      loadBookings();
+      loadBookings(); // refresh list
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Error';
-      Alert.alert('Error', message);
+      const msg = err instanceof Error ? err.message : 'Error';
+      Alert.alert('Error', msg);
     }
   };
 
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: '#020617',
-        paddingTop: 60,
-        paddingHorizontal: 16,
-      }}
-    >
-      <Text
-        style={{
-          color: 'white',
-          fontSize: 26,
-          fontWeight: 'bold',
-          marginBottom: 20,
-        }}
-      >
+    <View style={{ flex: 1, backgroundColor: '#020617', padding: 16 }}>
+      <Text style={{ color: 'white', fontSize: 24, fontWeight: 'bold', marginBottom: 16 }}>
         Teacher Bookings
       </Text>
 
-      <Pressable
-        onPress={() => router.back()}
-        style={{
-          backgroundColor: '#1e293b',
-          padding: 10,
-          borderRadius: 10,
-          marginBottom: 20,
-          alignSelf: 'flex-start',
-        }}
-      >
-        <Text style={{ color: 'white' }}>Back</Text>
-      </Pressable>
-
       {loading ? (
         <ActivityIndicator size="large" color="#06b6d4" />
-      ) : bookings.length === 0 ? (
-        <Text style={{ color: '#94a3b8' }}>No bookings yet.</Text>
       ) : (
         <FlatList
           data={bookings}
@@ -96,29 +56,33 @@ export default function TeacherBookings() {
                 marginBottom: 12,
               }}
             >
-              <Text style={{ color: 'white', fontWeight: 'bold' }}>
-                Lesson ID: {item.lesson}
+              <Text style={{ color: 'white', fontSize: 18, fontWeight: 'bold' }}>
+                {item.lesson_title}
               </Text>
 
               <Text style={{ color: '#cbd5e1', marginTop: 6 }}>
+                Student: {item.student_username}
+              </Text>
+
+              <Text style={{ color: '#22c55e', marginTop: 6 }}>
+                Price: {item.lesson_price} coins
+              </Text>
+
+              <Text style={{ color: '#facc15', marginTop: 6 }}>
                 Status: {item.status}
               </Text>
 
-              {/* buttons */}
               {item.status === 'pending' && (
-                <View style={{ flexDirection: 'row', marginTop: 10 }}>
+                <View style={{ flexDirection: 'row', marginTop: 10, gap: 10 }}>
                   <Pressable
                     onPress={() => handleUpdate(item.id, 'approved')}
                     style={{
                       backgroundColor: '#22c55e',
                       padding: 10,
                       borderRadius: 8,
-                      marginRight: 10,
                     }}
                   >
-                    <Text style={{ color: '#000', fontWeight: 'bold' }}>
-                      Approve
-                    </Text>
+                    <Text style={{ color: 'black', fontWeight: 'bold' }}>Approve</Text>
                   </Pressable>
 
                   <Pressable
@@ -129,9 +93,7 @@ export default function TeacherBookings() {
                       borderRadius: 8,
                     }}
                   >
-                    <Text style={{ color: '#fff', fontWeight: 'bold' }}>
-                      Decline
-                    </Text>
+                    <Text style={{ color: 'white', fontWeight: 'bold' }}>Decline</Text>
                   </Pressable>
                 </View>
               )}
