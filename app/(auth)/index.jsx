@@ -115,7 +115,7 @@ export default function LoginScreen() {
         </Text>
 
         <TextInput
-          placeholder="Username"
+          placeholder="Username or Email"
           placeholderTextColor="#94a3b8"
           value={username}
           onChangeText={setUsername}
