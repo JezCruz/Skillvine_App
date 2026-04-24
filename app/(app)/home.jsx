@@ -8,6 +8,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [role, setRole] = useState(null);
   const [profile, setProfile] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   const loadData = async () => {
     try {
@@ -28,6 +29,12 @@ export default function Home() {
   useEffect(() => {
     loadData();
   }, []);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadData();
+    setRefreshing(false);
+  };
 
   return (
     <View
@@ -89,6 +96,8 @@ export default function Home() {
         <ActivityIndicator size="large" color="#06b6d4" />
       ) : (
         <FlatList
+          refreshing={refreshing}
+          onRefresh={onRefresh}
           data={lessons}
           keyExtractor={(item) => String(item.id)}
           renderItem={({ item }) => (
