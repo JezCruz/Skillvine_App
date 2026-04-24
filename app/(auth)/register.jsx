@@ -19,6 +19,7 @@ export default function RegisterScreen() {
   const [password, setPassword] = useState('');
   const [password2, setPassword2] = useState('');
   const [loading, setLoading] = useState(false);
+  const [role, setRole] = useState(null);
 
   const handleRegister = async () => {
     if (!username || !password || !password2) {
@@ -30,10 +31,19 @@ export default function RegisterScreen() {
       return;
     }
 
+    if (!role) {
+        Toast.show({
+            type: 'error',
+            text1: 'Role required',
+            text2: 'Please choose Student or Teacher.',
+        });
+        return;
+    }
+
     try {
       setLoading(true);
 
-      await registerUser(username, email, password, password2);
+      await registerUser(username, email, password, password2, role);
 
       Toast.show({
         type: 'success',
@@ -103,6 +113,41 @@ export default function RegisterScreen() {
           onChangeText={setPassword2}
           style={inputStyle}
         />
+
+        <View style={{ flexDirection: 'row', marginBottom: 16 }}>
+            <Pressable
+                onPress={() => setRole('student')}
+                style={{
+                flex: 1,
+                backgroundColor: role === 'student' ? '#06b6d4' : '#1e293b',
+                borderColor: role === 'student' ? '#22d3ee' : '#334155',
+                padding: 12,
+                borderRadius: 10,
+                marginRight: 8,
+                alignItems: 'center',
+                }}
+            >
+                <Text style={{ color: role === 'student' ? '#000' : '#fff', fontWeight: 'bold' }}>
+                Student
+                </Text>
+            </Pressable>
+
+            <Pressable
+                onPress={() => setRole('teacher')}
+                style={{
+                flex: 1,
+                backgroundColor: role === 'teacher' ? '#06b6d4' : '#1e293b',
+                borderColor: role === 'student' ? '#22d3ee' : '#334155',
+                padding: 12,
+                borderRadius: 10,
+                alignItems: 'center',
+                }}
+            >
+                <Text style={{ color: role === 'teacher' ? '#000' : '#fff', fontWeight: 'bold' }}>
+                Teacher
+                </Text>
+            </Pressable>
+        </View>
 
         <Pressable
           onPress={handleRegister}
