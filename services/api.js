@@ -1,9 +1,13 @@
 import * as SecureStore from 'expo-secure-store';
 
-const API_BASE = "http://192.168.100.25:8000/api";
+const API_BASE = "http://192.168.100.36:8000/api";
 
 export async function fetchProfile() {
   const token = await SecureStore.getItemAsync("access");
+
+  if (!token) {
+    throw new Error("No access token. Please log in first.");
+  }
 
   const res = await fetch(`${API_BASE}/profile/`, {
     headers: {
@@ -17,7 +21,7 @@ export async function fetchProfile() {
     throw new Error("Failed to fetch profile");
   }
 
-  return data;
+  return await res.json();
 }
 
 export async function getStoredToken() {
@@ -69,6 +73,11 @@ export async function fetchLessonById(id) {
 
 export async function createBooking(lessonId) {
   const token = await SecureStore.getItemAsync("access");
+
+  if (!token) {
+    router.replace("/login");
+    return;
+  }  
 
   const res = await fetch(`${API_BASE}/bookings/create/`, {
     method: "POST",
