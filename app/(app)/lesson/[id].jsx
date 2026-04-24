@@ -26,11 +26,27 @@ export default function LessonDetails() {
 
   const handleBookLesson = async () => {
     try {
-      await createBooking(id);
-      Alert.alert('Success', 'Lesson booked successfully!');
+      await createBooking(Number(id));
+      Alert.alert('Success', 'Booking request sent!');
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Something went wrong';
-      Alert.alert('Error', message);
+
+      if (message.includes('already booked')) {
+        Alert.alert('Already booked', 'You already booked this lesson.');
+        return;
+      }
+
+      if (message.includes('own lesson')) {
+        Alert.alert('Not allowed', 'You cannot book your own lesson.');
+        return;
+      }
+
+      if (message.includes('Only students')) {
+        Alert.alert('Not allowed', 'Only students can book lessons.');
+        return;
+      }
+
+      Alert.alert('Booking failed', message);
     }
   };
 
