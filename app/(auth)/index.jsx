@@ -160,6 +160,11 @@ export default function LoginScreen() {
             {loading ? 'Logging in...' : 'Login'}
           </Text>
         </Pressable>
+        <Pressable onPress={() => router.push('/register')}>
+          <Text style={{ color: '#38bdf8', marginTop: 16 }}>
+            {"Don't have an account? Register"}
+          </Text>
+        </Pressable>
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
