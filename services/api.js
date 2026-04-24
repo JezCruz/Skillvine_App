@@ -160,3 +160,34 @@ export async function logoutUser() {
   await SecureStore.deleteItemAsync('access');
   await SecureStore.deleteItemAsync('refresh');
 }
+
+
+// REGISTER
+export async function registerUser(username, email, password, password2, role = 'student') {
+  const res = await fetch(`${API_BASE}/register/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      username,
+      email,
+      password,
+      password2,
+      role,
+    })
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(
+      data.error ||
+      data.username ||
+      data.password ||
+      "Registration failed"
+    );
+  }
+
+  return data;
+}
