@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator, Alert } from 'react-native';
 import { fetchProfile } from '../../services/api';
+import Screen from '../../components/Screen';
+import Card from '../../components/Card';
 
 export default function Profile() {
   const [profile, setProfile] = useState(null);
@@ -23,7 +25,7 @@ export default function Profile() {
   }, []);
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#020617', padding: 16 }}>
+    <Screen>
       <Text style={{ color: 'white', fontSize: 26, fontWeight: 'bold', marginBottom: 20 }}>
         Profile
       </Text>
@@ -51,6 +53,6 @@ export default function Profile() {
       ) : (
         <Text style={{ color: 'white' }}>No profile data</Text>
       )}
-    </View>
+    </Screen>
   );
 }

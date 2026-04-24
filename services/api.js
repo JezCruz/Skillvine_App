@@ -2,6 +2,9 @@ import * as SecureStore from 'expo-secure-store';
 
 const API_BASE = "http://192.168.100.25:8000/api";
 
+export async function getStoredToken() {
+  return await SecureStore.getItemAsync("access");
+}
 
 async function getAuthHeaders() {
   const token = await SecureStore.getItemAsync("access");
