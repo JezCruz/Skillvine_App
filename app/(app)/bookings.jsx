@@ -13,6 +13,7 @@ import { fetchMyBookings } from '../../services/api';
 export default function MyBookings() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   const loadBookings = async () => {
     try {
@@ -29,6 +30,12 @@ export default function MyBookings() {
   useEffect(() => {
     loadBookings();
   }, []);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadBookings();
+    setRefreshing(false);
+  };
 
   return (
     <View
@@ -69,6 +76,8 @@ export default function MyBookings() {
         <Text style={{ color: '#94a3b8' }}>No bookings yet.</Text>
       ) : (
         <FlatList
+          refreshing={refreshing}
+          onRefresh={onRefresh}
           data={bookings}
           keyExtractor={(item) => String(item.id)}
           renderItem={({ item }) => (

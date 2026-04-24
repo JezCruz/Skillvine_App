@@ -5,6 +5,13 @@ import { fetchMyEnrollments } from '../../services/api';
 export default function Learning() {
   const [enrollments, setEnrollments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadEnrollments();
+    setRefreshing(false);
+  };
 
   const loadEnrollments = async () => {
     try {
@@ -34,6 +41,8 @@ export default function Learning() {
         <Text style={{ color: '#94a3b8' }}>No enrolled lessons yet.</Text>
       ) : (
         <FlatList
+          refreshing={refreshing}
+          onRefresh={onRefresh}
           data={enrollments}
           keyExtractor={(item) => String(item.id)}
           renderItem={({ item }) => (

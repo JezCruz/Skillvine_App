@@ -8,6 +8,13 @@ export default function TeacherBookings() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadBookings();
+    setRefreshing(false);
+  };
 
   const loadBookings = async () => {
     try {
@@ -52,6 +59,8 @@ export default function TeacherBookings() {
         <ActivityIndicator size="large" color="#06b6d4" />
       ) : (
         <FlatList
+          refreshing={refreshing}
+          onRefresh={onRefresh}
           data={bookings}
           keyExtractor={(item) => String(item.id)}
           renderItem={({ item }) => (
@@ -130,7 +139,7 @@ export default function TeacherBookings() {
                       {updatingId === item.id ? 'Updating...' : 'Decline'}
                     </Text>
                   </Pressable>
-                  
+
                 </View>
               )}
             </View>
