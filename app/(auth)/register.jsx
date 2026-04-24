@@ -23,6 +23,10 @@ export default function RegisterScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
+  const isValidEmail = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
   const getPasswordStrength = (password) => {
     let score = 0;
 
@@ -37,6 +41,16 @@ export default function RegisterScreen() {
   };
 
   const handleRegister = async () => {
+
+    if (!isValidEmail(email)) {
+      Toast.show({
+        type: 'error',
+        text1: 'Invalid email',
+        text2: 'Please enter a valid email address.',
+      });
+      return;
+    }
+
     const strength = getPasswordStrength(password);
 
     if (strength === 'weak') {
@@ -106,6 +120,8 @@ export default function RegisterScreen() {
     password &&
     password2 &&
     role &&
+    email &&
+    isValidEmail(email) &&
     password === password2 &&
     strength !== 'weak' &&
     !loading;
@@ -140,6 +156,18 @@ export default function RegisterScreen() {
           onChangeText={setEmail}
           style={inputStyle}
         />
+        {email.length > 0 && (
+          <Text
+            style={{
+              marginBottom: 12,
+              color: isValidEmail(email) ? '#22c55e' : '#ef4444',
+            }}
+          >
+            {isValidEmail(email)
+              ? 'Valid email'
+              : 'Invalid email'}
+          </Text>
+        )}
 
         <View style={{ position: 'relative' }}>
           <TextInput
