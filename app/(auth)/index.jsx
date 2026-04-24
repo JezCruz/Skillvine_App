@@ -6,6 +6,8 @@ import {
   Pressable,
   Alert,
   ActivityIndicator,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import { router } from 'expo-router';
 import { loginUser, getStoredToken } from '../../services/api';
@@ -79,67 +81,69 @@ export default function LoginScreen() {
   }
 
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: 'center',
-        padding: 24,
-        backgroundColor: '#0f172a',
-      }}
-    >
-      <Text
-        style={{
-          fontSize: 28,
-          fontWeight: 'bold',
-          color: 'white',
-          marginBottom: 20,
-        }}
-      >
-        Skillvine Login
-      </Text>
-
-      <TextInput
-        placeholder="Username"
-        placeholderTextColor="#aaa"
-        value={username}
-        onChangeText={setUsername}
-        style={{
-          backgroundColor: '#1e293b',
-          color: 'white',
-          padding: 12,
-          borderRadius: 10,
-          marginBottom: 10,
-        }}
-      />
-
-      <TextInput
-        placeholder="Password"
-        placeholderTextColor="#aaa"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-        style={{
-          backgroundColor: '#1e293b',
-          color: 'white',
-          padding: 12,
-          borderRadius: 10,
-          marginBottom: 15,
-        }}
-      />
-
-      <Pressable
-        onPress={handleLogin}
-        style={{
-          backgroundColor: '#06b6d4',
-          padding: 14,
-          borderRadius: 10,
-          alignItems: 'center',
-        }}
-      >
-        <Text style={{ color: '#000', fontWeight: 'bold' }}>
-          {loading ? 'Logging in...' : 'Login'}
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            padding: 24,
+            backgroundColor: '#0f172a',
+          }}
+        >
+        <Text
+          style={{
+            fontSize: 28,
+            fontWeight: 'bold',
+            color: 'white',
+            marginBottom: 20,
+          }}
+        >
+          Skillvine Login
         </Text>
-      </Pressable>
-    </View>
+
+        <TextInput
+          placeholder="Username"
+          placeholderTextColor="#aaa"
+          value={username}
+          onChangeText={setUsername}
+          style={{
+            backgroundColor: '#1e293b',
+            color: 'white',
+            padding: 12,
+            borderRadius: 10,
+            marginBottom: 10,
+          }}
+        />
+
+        <TextInput
+          placeholder="Password"
+          placeholderTextColor="#aaa"
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+          style={{
+            backgroundColor: '#1e293b',
+            color: 'white',
+            padding: 12,
+            borderRadius: 10,
+            marginBottom: 15,
+          }}
+        />
+
+        <Pressable
+          onPress={handleLogin}
+          style={{
+            backgroundColor: '#06b6d4',
+            padding: 14,
+            borderRadius: 10,
+            alignItems: 'center',
+          }}
+        >
+          <Text style={{ color: '#000', fontWeight: 'bold' }}>
+            {loading ? 'Logging in...' : 'Login'}
+          </Text>
+        </Pressable>
+      </View>
+    </TouchableWithoutFeedback>
   );
 }
