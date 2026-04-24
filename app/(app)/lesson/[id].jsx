@@ -3,6 +3,7 @@ import { View, Text, ActivityIndicator, Alert, Pressable } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { fetchLessonById, createBooking } from '../../../services/api';
 import AppButton from '../../../components/AppButton';
+import Toast from 'react-native-toast-message';
 
 export default function LessonDetails() {
   const { id } = useLocalSearchParams();
@@ -33,12 +34,20 @@ export default function LessonDetails() {
 
     try {
       await createBooking(Number(id));
-      Alert.alert('Success', 'Booking request sent!');
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: 'Booking request sent!',
+      });
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Something went wrong';
 
       if (message.includes('already booked')) {
-        Alert.alert('Already booked', 'You already booked this lesson.');
+        Toast.show({
+          type: 'info',
+          text1: 'Already booked',
+          text2: 'You already booked this lesson.',
+        });
         return;
       }
 
@@ -52,7 +61,11 @@ export default function LessonDetails() {
         return;
       }
 
-      Alert.alert('Booking failed', message);
+      Toast.show({
+        type: 'error',
+        text1: 'Booking failed',
+        text2: message,
+      });
     } finally {
       setBookingLoading(false);
     }
