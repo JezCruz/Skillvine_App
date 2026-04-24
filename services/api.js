@@ -1,33 +1,36 @@
 import * as SecureStore from 'expo-secure-store';
 
-const API_BASE = "http://192.168.100.36:8000/api";
+const API_BASE = "http://192.168.100.25:8000/api";
 
-export async function fetchProfile() {
+
+async function getAuthHeaders() {
   const token = await SecureStore.getItemAsync("access");
 
   if (!token) {
-    throw new Error("No access token. Please log in first.");
+    throw new Error("No access token. Please log in.");
   }
 
-  const res = await fetch(`${API_BASE}/profile/`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  return {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+  };
+}
 
+// PROFILE
+export async function fetchProfile() {
+  const headers = await getAuthHeaders();
+
+  const res = await fetch(`${API_BASE}/profile/`, { headers });
   const data = await res.json();
 
   if (!res.ok) {
-    throw new Error("Failed to fetch profile");
+    throw new Error(data.error || "Failed to fetch profile");
   }
 
-  return await res.json();
+  return data;
 }
 
-export async function getStoredToken() {
-  return await SecureStore.getItemAsync('access');
-}
-
+// LOGIN
 export async function loginUser(username, password) {
   const res = await fetch(`${API_BASE}/login/`, {
     method: "POST",
@@ -49,6 +52,7 @@ export async function loginUser(username, password) {
   return data;
 }
 
+// LESSONS
 export async function fetchLessons() {
   const res = await fetch(`${API_BASE}/lessons/`);
   const data = await res.json();
@@ -71,20 +75,13 @@ export async function fetchLessonById(id) {
   return data;
 }
 
+// BOOKINGS
 export async function createBooking(lessonId) {
-  const token = await SecureStore.getItemAsync("access");
-
-  if (!token) {
-    router.replace("/login");
-    return;
-  }  
+  const headers = await getAuthHeaders();
 
   const res = await fetch(`${API_BASE}/bookings/create/`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
+    headers,
     body: JSON.stringify({ lesson: lessonId }),
   });
 
@@ -98,50 +95,37 @@ export async function createBooking(lessonId) {
 }
 
 export async function fetchMyBookings() {
-  const token = await SecureStore.getItemAsync("access");
+  const headers = await getAuthHeaders();
 
-  const res = await fetch(`${API_BASE}/my-bookings/`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
+  const res = await fetch(`${API_BASE}/my-bookings/`, { headers });
   const data = await res.json();
 
   if (!res.ok) {
-    throw new Error("Failed to fetch bookings");
+    throw new Error(data.error || "Failed to fetch bookings");
   }
 
   return data;
 }
 
 export async function fetchTeacherBookings() {
-  const token = await SecureStore.getItemAsync("access");
+  const headers = await getAuthHeaders();
 
-  const res = await fetch(`${API_BASE}/teacher-bookings/`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
+  const res = await fetch(`${API_BASE}/teacher-bookings/`, { headers });
   const data = await res.json();
 
   if (!res.ok) {
-    throw new Error("Failed to fetch teacher bookings");
+    throw new Error(data.error || "Failed to fetch teacher bookings");
   }
 
   return data;
 }
 
 export async function updateBookingStatus(id, status) {
-  const token = await SecureStore.getItemAsync("access");
+  const headers = await getAuthHeaders();
 
   const res = await fetch(`${API_BASE}/booking/${id}/update/`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
+    headers,
     body: JSON.stringify({ status }),
   });
 
@@ -154,6 +138,21 @@ export async function updateBookingStatus(id, status) {
   return data;
 }
 
+// ENROLLMENTS (new)
+export async function fetchMyEnrollments() {
+  const headers = await getAuthHeaders();
+
+  const res = await fetch(`${API_BASE}/my-enrollments/`, { headers });
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.error || "Failed to fetch enrollments");
+  }
+
+  return data;
+}
+
+// LOGOUT
 export async function logoutUser() {
   await SecureStore.deleteItemAsync('access');
   await SecureStore.deleteItemAsync('refresh');
