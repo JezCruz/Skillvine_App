@@ -91,6 +91,7 @@ export default function AppLayout() {
         }}
       >
         <Drawer.Screen name="home" options={{ title: 'Home' }} />
+        <Drawer.Screen name="profile" options={{ title: 'Profile' }} />
         <Drawer.Screen name="learning" options={{ title: 'My Learning' }} />
         <Drawer.Screen name="bookings" options={{ title: 'My Bookings' }} />
         <Drawer.Screen name="teacher-bookings" options={{ title: 'Teacher Bookings' }} />
