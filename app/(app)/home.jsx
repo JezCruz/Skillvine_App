@@ -3,6 +3,7 @@ import { View, Text, FlatList, ActivityIndicator, Pressable } from 'react-native
 import { fetchLessons, fetchProfile } from '../../services/api';
 import { router } from 'expo-router';
 import EmptyState from '../../components/EmptyState';
+import AppButton from '../../components/AppButton';
 
 export default function Home() {
   const [lessons, setLessons] = useState([]);
@@ -91,6 +92,14 @@ export default function Home() {
         >
           <Text style={{ color: 'white' }}>Teacher Bookings</Text>
         </Pressable>
+      )}
+
+      {role === 'teacher' && (
+        <AppButton
+          title="Create Lesson"
+          onPress={() => router.push('/create-lesson')}
+          style={{ marginBottom: 16, alignSelf: 'flex-start' }}
+        />
       )}
 
       {loading ? (

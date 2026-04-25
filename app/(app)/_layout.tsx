@@ -92,17 +92,12 @@ export default function AppLayout() {
       >
         <Drawer.Screen name="home" options={{ title: 'Home' }} />
         <Drawer.Screen name="profile" options={{ title: 'Profile' }} />
+        <Drawer.Screen name="create-lesson" options={{ title: 'Create Lesson', drawerItemStyle: { display: 'none' } }} />
         <Drawer.Screen name="learning" options={{ title: 'My Learning' }} />
         <Drawer.Screen name="bookings" options={{ title: 'My Bookings' }} />
         <Drawer.Screen name="teacher-bookings" options={{ title: 'Teacher Bookings' }} />
-        <Drawer.Screen
-          name="lesson/[id]"
-          options={{ title: 'Lesson Details', drawerItemStyle: { display: 'none' } }}
-        />
-        <Drawer.Screen
-          name="edit-profile"
-          options={{ title: 'Edit Profile', drawerItemStyle: { display: 'none' } }}
-        />
+        <Drawer.Screen name="lesson/[id]" options={{ title: 'Lesson Details', drawerItemStyle: { display: 'none' } }} />
+        <Drawer.Screen name="edit-profile" options={{ title: 'Edit Profile', drawerItemStyle: { display: 'none' } }} />
       </Drawer>
 
       <StatusBar style="light" />

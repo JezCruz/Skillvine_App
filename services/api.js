@@ -211,3 +211,23 @@ export async function updateProfile(username, email) {
 
   return data;
 }
+
+
+// CREATE LESSON
+export async function createLesson(data) {
+  const headers = await getAuthHeaders();
+
+  const res = await fetch(`${API_BASE}/lessons/create/`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(data),
+  });
+
+  const result = await res.json();
+
+  if (!res.ok) {
+    throw new Error(result.error || "Failed to create lesson");
+  }
+
+  return result;
+}
