@@ -266,3 +266,22 @@ export async function updateLesson(id, data) {
 
   return result;
 }
+
+
+// DELETE LESSON
+export async function deleteLesson(id) {
+  const headers = await getAuthHeaders();
+
+  const res = await fetch(`${API_BASE}/lessons/${id}/delete/`, {
+    method: "DELETE",
+    headers,
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.error || "Failed to delete lesson");
+  }
+
+  return data;
+}

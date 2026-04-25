@@ -6,8 +6,9 @@ import Toast from 'react-native-toast-message';
 import Screen from '../../components/Screen';
 import Card from '../../components/Card';
 import EmptyState from '../../components/EmptyState';
-import { fetchMyLessons } from '../../services/api';
+import { fetchMyLessons, deleteLesson } from '../../services/api';
 import AppButton from '../../components/AppButton';
+import { Alert } from 'react-native';
 
 export default function MyLessons() {
   const [lessons, setLessons] = useState([]);
@@ -46,6 +47,37 @@ export default function MyLessons() {
       </Screen>
     );
   }
+
+    const handleDelete = (id) => {
+    Alert.alert(
+        'Delete Lesson',
+        'Are you sure you want to delete this lesson?',
+        [
+        { text: 'Cancel', style: 'cancel' },
+        {
+            text: 'Delete',
+            style: 'destructive',
+            onPress: async () => {
+            try {
+                await deleteLesson(id);
+                Toast.show({
+                type: 'success',
+                text1: 'Deleted',
+                text2: 'Lesson deleted successfully.',
+                });
+                loadLessons();
+            } catch (err) {
+                Toast.show({
+                type: 'error',
+                text1: 'Delete failed',
+                text2: err instanceof Error ? err.message : 'Something went wrong',
+                });
+              }
+            },
+          },
+        ]
+      );
+    };
 
   return (
     <Screen>
@@ -88,6 +120,13 @@ export default function MyLessons() {
                   onPress={() => router.push(`/lesson/${item.id}/edit`)}
                   variant="secondary"
                   style={{ marginTop: 12 }}
+                />
+
+                <AppButton
+                  title="Delete Lesson"
+                  onPress={() => handleDelete(item.id)}
+                  variant="danger"
+                  style={{ marginTop: 10 }}
                 />
               </Card>
             </Pressable>
