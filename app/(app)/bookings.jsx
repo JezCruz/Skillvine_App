@@ -4,7 +4,6 @@ import {
   Text,
   FlatList,
   ActivityIndicator,
-  Alert,
   Pressable,
 } from 'react-native';
 import { router } from 'expo-router';
@@ -15,14 +14,17 @@ export default function MyBookings() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState(null);
 
   const loadBookings = async () => {
     try {
+      setError(null);
+
       const data = await fetchMyBookings();
       setBookings(data);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Something went wrong';
-      Alert.alert('Error', message);
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -70,6 +72,33 @@ export default function MyBookings() {
       >
         <Text style={{ color: 'white' }}>Back</Text>
       </Pressable>
+
+      {error && (
+        <View
+          style={{
+            backgroundColor: '#7f1d1d',
+            padding: 12,
+            borderRadius: 10,
+            marginBottom: 12,
+          }}
+        >
+          <Text style={{ color: 'white', marginBottom: 8 }}>
+            Cannot connect to server. Try again.
+          </Text>
+
+          <Pressable
+            onPress={loadBookings}
+            style={{
+              backgroundColor: '#ef4444',
+              padding: 10,
+              borderRadius: 8,
+              alignItems: 'center',
+            }}
+          >
+            <Text style={{ color: 'white', fontWeight: 'bold' }}>Retry</Text>
+          </Pressable>
+        </View>
+      )}
 
       {loading ? (
         <ActivityIndicator size="large" color="#06b6d4" />

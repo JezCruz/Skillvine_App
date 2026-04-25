@@ -1,6 +1,6 @@
 import { fetchTeacherBookings, updateBookingStatus } from '../../services/api';
 import { useEffect, useState } from 'react';
-import { View, Text, FlatList, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator } from 'react-native';
 import AppButton from '../../components/AppButton';
 import Toast from 'react-native-toast-message';
 import EmptyState from '../../components/EmptyState';
@@ -10,6 +10,7 @@ export default function TeacherBookings() {
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState(null);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -19,11 +20,13 @@ export default function TeacherBookings() {
 
   const loadBookings = async () => {
     try {
+      setError(null);
+
       const data = await fetchTeacherBookings();
       setBookings(data);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Error';
-      Alert.alert('Error', msg);
+      const message = err instanceof Error ? err.message : 'Something went wrong';
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -65,6 +68,20 @@ export default function TeacherBookings() {
       <Text style={{ color: 'white', fontSize: 24, fontWeight: 'bold', marginBottom: 16 }}>
         Teacher Bookings
       </Text>
+
+      {error && (
+        <View style={{ backgroundColor: '#7f1d1d', padding: 12, borderRadius: 10, marginBottom: 12 }}>
+          <Text style={{ color: 'white', marginBottom: 8 }}>
+            Cannot connect to server. Try again.
+          </Text>
+
+          <AppButton
+            title="Retry"
+            onPress={loadBookings}
+            variant="danger"
+          />
+        </View>
+      )}
 
       {loading ? (
         <ActivityIndicator size="large" color="#06b6d4" />
