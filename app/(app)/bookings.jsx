@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { fetchMyBookings } from '../../services/api';
+import EmptyState from '../../components/EmptyState';
 
 export default function MyBookings() {
   const [bookings, setBookings] = useState([]);
@@ -73,7 +74,10 @@ export default function MyBookings() {
       {loading ? (
         <ActivityIndicator size="large" color="#06b6d4" />
       ) : bookings.length === 0 ? (
-        <Text style={{ color: '#94a3b8' }}>No bookings yet.</Text>
+        <EmptyState
+          title="No bookings yet"
+          subtitle="Book a lesson first, then it will appear here."
+        />
       ) : (
         <FlatList
           refreshing={refreshing}

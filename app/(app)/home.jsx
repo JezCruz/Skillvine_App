@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { View, Text, FlatList, ActivityIndicator, Pressable } from 'react-native';
 import { fetchLessons, fetchProfile } from '../../services/api';
 import { router } from 'expo-router';
+import EmptyState from '../../components/EmptyState';
 
 export default function Home() {
   const [lessons, setLessons] = useState([]);
@@ -94,6 +95,11 @@ export default function Home() {
 
       {loading ? (
         <ActivityIndicator size="large" color="#06b6d4" />
+      ) : lessons.length === 0 ? (
+        <EmptyState
+          title="No lessons available"
+          subtitle="Active lessons will appear here once teachers publish them."
+        />
       ) : (
         <FlatList
           refreshing={refreshing}

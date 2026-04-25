@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { View, Text, FlatList, ActivityIndicator, Alert } from 'react-native';
 import { fetchMyEnrollments } from '../../services/api';
+import EmptyState from '../../components/EmptyState';
 
 export default function Learning() {
   const [enrollments, setEnrollments] = useState([]);
@@ -38,7 +39,10 @@ export default function Learning() {
       {loading ? (
         <ActivityIndicator size="large" color="#06b6d4" />
       ) : enrollments.length === 0 ? (
-        <Text style={{ color: '#94a3b8' }}>No enrolled lessons yet.</Text>
+        <EmptyState
+          title="No enrolled lessons yet"
+          subtitle="Approved lessons will appear here after a teacher accepts your booking."
+        />
       ) : (
         <FlatList
           refreshing={refreshing}

@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { View, Text, FlatList, ActivityIndicator, Alert } from 'react-native';
 import AppButton from '../../components/AppButton';
 import Toast from 'react-native-toast-message';
+import EmptyState from '../../components/EmptyState';
 
 export default function TeacherBookings() {
   const [bookings, setBookings] = useState([]);
@@ -67,6 +68,11 @@ export default function TeacherBookings() {
 
       {loading ? (
         <ActivityIndicator size="large" color="#06b6d4" />
+      ) : bookings.length === 0 ? (
+        <EmptyState
+          title="No booking requests"
+          subtitle="When students book your lessons, requests will appear here."
+        />
       ) : (
         <FlatList
           refreshing={refreshing}
