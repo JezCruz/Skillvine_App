@@ -1,9 +1,12 @@
-import { fetchTeacherBookings, updateBookingStatus } from '../../services/api';
 import { useEffect, useState } from 'react';
-import { View, Text, FlatList, ActivityIndicator } from 'react-native';
-import AppButton from '../../components/AppButton';
+import { Text, FlatList, ActivityIndicator, View } from 'react-native';
 import Toast from 'react-native-toast-message';
+
+import Screen from '../../components/Screen';
+import Card from '../../components/Card';
 import EmptyState from '../../components/EmptyState';
+import AppButton from '../../components/AppButton';
+import { fetchTeacherBookings, updateBookingStatus } from '../../services/api';
 
 export default function TeacherBookings() {
   const [bookings, setBookings] = useState([]);
@@ -12,14 +15,9 @@ export default function TeacherBookings() {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
 
-  const onRefresh = async () => {
-    setRefreshing(true);
-    await loadBookings();
-    setRefreshing(false);
-  };
-
-  const loadBookings = async () => {
+  const loadBookings = async ({ showLoading = false } = {}) => {
     try {
+      if (showLoading) setLoading(true);
       setError(null);
 
       const data = await fetchTeacherBookings();
@@ -36,6 +34,12 @@ export default function TeacherBookings() {
     loadBookings();
   }, []);
 
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadBookings();
+    setRefreshing(false);
+  };
+
   const handleUpdate = async (id, status) => {
     if (updatingId) return;
 
@@ -43,48 +47,51 @@ export default function TeacherBookings() {
 
     try {
       await updateBookingStatus(id, status);
+
       Toast.show({
         type: 'success',
         text1: 'Success',
-        text2: status === 'approved'
-          ? 'Student has been approved'
-          : 'Booking declined',
+        text2: status === 'approved' ? 'Student has been approved' : 'Booking declined',
       });
-      loadBookings();
+
+      await loadBookings();
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Error';
       Toast.show({
         type: 'error',
         text1: 'Error',
-        text2: message,
+        text2: err instanceof Error ? err.message : 'Something went wrong',
       });
     } finally {
       setUpdatingId(null);
     }
   };
 
+  if (loading) {
+    return (
+      <Screen>
+        <ActivityIndicator size="large" color="#06b6d4" />
+      </Screen>
+    );
+  }
+
   return (
-    <View style={{ flex: 1, backgroundColor: '#020617', padding: 16 }}>
-      <Text style={{ color: 'white', fontSize: 24, fontWeight: 'bold', marginBottom: 16 }}>
+    <Screen>
+      <Text style={{ color: 'white', fontSize: 26, fontWeight: 'bold', marginBottom: 20 }}>
         Teacher Bookings
       </Text>
 
-      {error && (
-        <View style={{ backgroundColor: '#7f1d1d', padding: 12, borderRadius: 10, marginBottom: 12 }}>
-          <Text style={{ color: 'white', marginBottom: 8 }}>
+      {error ? (
+        <Card style={{ backgroundColor: '#7f1d1d' }}>
+          <Text style={{ color: 'white', marginBottom: 10 }}>
             Cannot connect to server. Try again.
           </Text>
 
           <AppButton
             title="Retry"
-            onPress={loadBookings}
+            onPress={() => loadBookings({ showLoading: true })}
             variant="danger"
           />
-        </View>
-      )}
-
-      {loading ? (
-        <ActivityIndicator size="large" color="#06b6d4" />
+        </Card>
       ) : bookings.length === 0 ? (
         <EmptyState
           title="No booking requests"
@@ -97,14 +104,7 @@ export default function TeacherBookings() {
           data={bookings}
           keyExtractor={(item) => String(item.id)}
           renderItem={({ item }) => (
-            <View
-              style={{
-                backgroundColor: '#111827',
-                padding: 16,
-                borderRadius: 14,
-                marginBottom: 12,
-              }}
-            >
+            <Card>
               <Text style={{ color: 'white', fontSize: 18, fontWeight: 'bold' }}>
                 {item.lesson_title}
               </Text>
@@ -122,8 +122,7 @@ export default function TeacherBookings() {
               </Text>
 
               {item.status === 'pending' && (
-
-                <View style={{ flexDirection: 'row', marginTop: 10 }}>
+                <View style={{ flexDirection: 'row', marginTop: 12 }}>
                   <AppButton
                     title={updatingId === item.id ? 'Updating...' : 'Approve'}
                     onPress={() => handleUpdate(item.id, 'approved')}
@@ -140,12 +139,11 @@ export default function TeacherBookings() {
                     style={{ flex: 1 }}
                   />
                 </View>
-
               )}
-            </View>
+            </Card>
           )}
         />
       )}
-    </View>
+    </Screen>
   );
 }
