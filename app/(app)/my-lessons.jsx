@@ -48,23 +48,28 @@ export default function MyLessons() {
     );
   }
 
-    const handleDelete = (id) => {
+    const handleDelete = (id, title) => {
     Alert.alert(
-        'Delete Lesson',
-        'Are you sure you want to delete this lesson?',
+        'Confirm Delete',
+        `Are you sure you want to delete "${title}"?\n\nThis action cannot be undone.`,
         [
-        { text: 'Cancel', style: 'cancel' },
+        {
+            text: 'Cancel',
+            style: 'cancel',
+        },
         {
             text: 'Delete',
             style: 'destructive',
             onPress: async () => {
             try {
                 await deleteLesson(id);
+
                 Toast.show({
                 type: 'success',
                 text1: 'Deleted',
-                text2: 'Lesson deleted successfully.',
+                text2: 'Lesson removed successfully.',
                 });
+
                 loadLessons();
             } catch (err) {
                 Toast.show({
@@ -72,11 +77,11 @@ export default function MyLessons() {
                 text1: 'Delete failed',
                 text2: err instanceof Error ? err.message : 'Something went wrong',
                 });
-              }
+            }
             },
-          },
+        },
         ]
-      );
+    );
     };
 
   return (
@@ -124,7 +129,7 @@ export default function MyLessons() {
 
                 <AppButton
                   title="Delete Lesson"
-                  onPress={() => handleDelete(item.id)}
+                  onPress={() => handleDelete(item.id, item.title)}
                   variant="danger"
                   style={{ marginTop: 10 }}
                 />
