@@ -10,6 +10,11 @@ async function requestWithRetry(url, options = {}, retries = 2) {
       const res = await fetch(url, options);
       const data = await res.json();
 
+      if (res.status === 401) {
+        await logoutUser();
+        throw new Error("Session expired. Please login again.");
+      }
+
       if (!res.ok) {
         throw new Error(data.error || data.detail || `Request failed with ${res.status}`);
       }
@@ -26,6 +31,7 @@ async function requestWithRetry(url, options = {}, retries = 2) {
 }
 
 
+// Token
 export async function getStoredToken() {
   return await SecureStore.getItemAsync("access");
 }
