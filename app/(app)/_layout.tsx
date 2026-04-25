@@ -101,6 +101,7 @@ export default function AppLayout() {
         <Drawer.Screen name="my-lessons" options={{ title: 'My Lessons' }} />
         <Drawer.Screen name="lesson/[id]" options={{ title: 'Lesson Details', drawerItemStyle: { display: 'none' } }} />
         <Drawer.Screen name="edit-profile" options={{ title: 'Edit Profile', drawerItemStyle: { display: 'none' } }} />
+        <Drawer.Screen name="lesson/[id]/edit" options={{ title: 'Edit Lesson', drawerItemStyle: { display: 'none' } }} />
       </Drawer>
 
       <StatusBar style="light" />

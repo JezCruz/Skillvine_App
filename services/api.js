@@ -246,3 +246,23 @@ export async function fetchMyLessons() {
 
   return data;
 }
+
+
+// API HELPER
+export async function updateLesson(id, data) {
+  const headers = await getAuthHeaders();
+
+  const res = await fetch(`${API_BASE}/lessons/${id}/update/`, {
+    method: "PUT",
+    headers,
+    body: JSON.stringify(data),
+  });
+
+  const result = await res.json();
+
+  if (!res.ok) {
+    throw new Error(result.error || "Failed to update lesson");
+  }
+
+  return result;
+}

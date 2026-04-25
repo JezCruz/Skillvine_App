@@ -7,6 +7,7 @@ import Screen from '../../components/Screen';
 import Card from '../../components/Card';
 import EmptyState from '../../components/EmptyState';
 import { fetchMyLessons } from '../../services/api';
+import AppButton from '../../components/AppButton';
 
 export default function MyLessons() {
   const [lessons, setLessons] = useState([]);
@@ -81,6 +82,13 @@ export default function MyLessons() {
                 <Text style={{ color: '#facc15', marginTop: 6 }}>
                   Status: {item.status}
                 </Text>
+
+                <AppButton
+                  title="Edit Lesson"
+                  onPress={() => router.push(`/lesson/${item.id}/edit`)}
+                  variant="secondary"
+                  style={{ marginTop: 12 }}
+                />
               </Card>
             </Pressable>
           )}
