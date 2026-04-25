@@ -3,6 +3,8 @@ import { Text, ActivityIndicator } from 'react-native';
 import Screen from '../../components/Screen';
 import Card from '../../components/Card';
 import { fetchProfile } from '../../services/api';
+import { router } from 'expo-router';
+import AppButton from '../../components/AppButton';
 
 export default function Profile() {
   const [profile, setProfile] = useState(null);
@@ -80,6 +82,13 @@ export default function Profile() {
         >
           💰 {profile.coins || 0} coins
         </Text>
+
+        <AppButton
+          title="Edit Profile"
+          onPress={() => router.push('/edit-profile')}
+          variant="secondary"
+          style={{ marginTop: 16 }}
+        />
       </Card>
     </Screen>
   );

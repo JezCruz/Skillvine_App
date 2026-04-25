@@ -191,3 +191,23 @@ export async function registerUser(username, email, password, password2, role = 
 
   return data;
 }
+
+
+// UPDATE PROFILE
+export async function updateProfile(username, email) {
+  const headers = await getAuthHeaders();
+
+  const res = await fetch(`${API_BASE}/profile/update/`, {
+    method: "PUT",
+    headers,
+    body: JSON.stringify({ username, email }),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.error || "Failed to update profile");
+  }
+
+  return data;
+}
