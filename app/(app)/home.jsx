@@ -11,9 +11,12 @@ export default function Home() {
   const [role, setRole] = useState(null);
   const [profile, setProfile] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState(null);
 
   const loadData = async () => {
     try {
+      setError(null);
+
       const lessonsData = await fetchLessons();
       const profileData = await fetchProfile();
 
@@ -22,7 +25,7 @@ export default function Home() {
       setProfile(profileData);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Something went wrong';
-      console.log(message);
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -100,6 +103,33 @@ export default function Home() {
           onPress={() => router.push('/create-lesson')}
           style={{ marginBottom: 16, alignSelf: 'flex-start' }}
         />
+      )}
+
+      {error && (
+        <View
+          style={{
+            backgroundColor: '#7f1d1d',
+            padding: 12,
+            borderRadius: 10,
+            marginBottom: 12,
+          }}
+        >
+          <Text style={{ color: 'white', marginBottom: 8 }}>
+            Cannot connect to server. Make sure backend is running.
+          </Text>
+
+          <Pressable
+            onPress={loadData}
+            style={{
+              backgroundColor: '#ef4444',
+              padding: 10,
+              borderRadius: 8,
+              alignItems: 'center',
+            }}
+          >
+            <Text style={{ color: 'white', fontWeight: 'bold' }}>Retry</Text>
+          </Pressable>
+        </View>
       )}
 
       {loading ? (

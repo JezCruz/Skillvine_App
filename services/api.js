@@ -2,6 +2,30 @@ import * as SecureStore from 'expo-secure-store';
 
 const API_BASE = "http://192.168.100.25:8000/api";
 
+
+// FETCH HELPER
+async function requestWithRetry(url, options = {}, retries = 2) {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const res = await fetch(url, options);
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || data.detail || `Request failed with ${res.status}`);
+      }
+
+      return data;
+    } catch (err) {
+      if (attempt === retries) {
+        throw err;
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+  }
+}
+
+
 export async function getStoredToken() {
   return await SecureStore.getItemAsync("access");
 }
@@ -23,14 +47,7 @@ async function getAuthHeaders() {
 export async function fetchProfile() {
   const headers = await getAuthHeaders();
 
-  const res = await fetch(`${API_BASE}/profile/`, { headers });
-  const data = await res.json();
-
-  if (!res.ok) {
-    throw new Error(data.error || "Failed to fetch profile");
-  }
-
-  return data;
+  return await requestWithRetry(`${API_BASE}/profile/`, { headers });
 }
 
 // LOGIN
@@ -57,14 +74,7 @@ export async function loginUser(username, password) {
 
 // LESSONS
 export async function fetchLessons() {
-  const res = await fetch(`${API_BASE}/lessons/`);
-  const data = await res.json();
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch lessons");
-  }
-
-  return data;
+  return await requestWithRetry(`${API_BASE}/lessons/`);
 }
 
 export async function fetchLessonById(id) {
@@ -285,3 +295,4 @@ export async function deleteLesson(id) {
 
   return data;
 }
+
