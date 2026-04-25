@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator, Alert } from 'react-native';
-import { fetchProfile } from '../../services/api';
+import { Text, ActivityIndicator } from 'react-native';
 import Screen from '../../components/Screen';
 import Card from '../../components/Card';
+import { fetchProfile } from '../../services/api';
 
 export default function Profile() {
   const [profile, setProfile] = useState(null);
@@ -13,8 +13,7 @@ export default function Profile() {
       const data = await fetchProfile();
       setProfile(data);
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Error';
-      Alert.alert('Error', message);
+      console.log(err);
     } finally {
       setLoading(false);
     }
@@ -24,35 +23,64 @@ export default function Profile() {
     loadProfile();
   }, []);
 
+  if (loading) {
+    return (
+      <Screen>
+        <ActivityIndicator size="large" color="#06b6d4" />
+      </Screen>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <Screen>
+        <Text style={{ color: 'white' }}>No profile data</Text>
+      </Screen>
+    );
+  }
+
   return (
     <Screen>
       <Text style={{ color: 'white', fontSize: 26, fontWeight: 'bold', marginBottom: 20 }}>
         Profile
       </Text>
 
-      {loading ? (
-        <ActivityIndicator size="large" color="#06b6d4" />
-      ) : profile ? (
-        <View style={{ backgroundColor: '#111827', padding: 18, borderRadius: 16 }}>
-          <Text style={{ color: 'white', fontSize: 18, marginBottom: 10 }}>
-            Username: {profile.username}
-          </Text>
+      <Card>
+        <Text style={{ color: 'white', fontSize: 18, marginBottom: 8 }}>
+          👤 {profile.username}
+        </Text>
 
-          <Text style={{ color: '#cbd5e1', marginBottom: 10 }}>
-            Email: {profile.email}
-          </Text>
+        <Text style={{ color: '#94a3b8', marginBottom: 12 }}>
+          📧 {profile.email}
+        </Text>
 
-          <Text style={{ color: '#93c5fd', marginBottom: 10 }}>
-            Role: {profile.role}
-          </Text>
+        {/* ROLE BADGE */}
+        <Text
+          style={{
+            alignSelf: 'flex-start',
+            backgroundColor: profile.role === 'teacher' ? '#a78bfa' : '#06b6d4',
+            color: '#000',
+            paddingHorizontal: 10,
+            paddingVertical: 4,
+            borderRadius: 8,
+            fontWeight: 'bold',
+            marginBottom: 12,
+          }}
+        >
+          {profile.role.toUpperCase()}
+        </Text>
 
-          <Text style={{ color: '#22c55e', fontSize: 18, fontWeight: 'bold' }}>
-            Coins: {profile.coins}
-          </Text>
-        </View>
-      ) : (
-        <Text style={{ color: 'white' }}>No profile data</Text>
-      )}
+        {/* COINS */}
+        <Text
+          style={{
+            color: '#22c55e',
+            fontSize: 18,
+            fontWeight: 'bold',
+          }}
+        >
+          💰 {profile.coins || 0} coins
+        </Text>
+      </Card>
     </Screen>
   );
 }
