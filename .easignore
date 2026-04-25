@@ -1,5 +1,8 @@
 node_modules
 .expo
+.git
+.vscode
+inspect-build
 dist
 web-build
 android
