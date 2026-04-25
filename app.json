@@ -14,7 +14,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/skillvine-foreground.png",
+        "foregroundImage": "./assets/images/skillvine.png",
         "backgroundColor": "#020617"
       },
       "edgeToEdgeEnabled": true,
