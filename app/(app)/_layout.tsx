@@ -2,7 +2,7 @@ import { Drawer } from 'expo-router/drawer';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
-import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
+import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import { View, Pressable, Text, ActivityIndicator } from 'react-native';
 import { router } from 'expo-router';
 import { logoutUser, fetchProfile } from '../../services/api';
@@ -19,6 +19,8 @@ export default function AppLayout() {
         setRole(profile.role);
       } catch (err) {
         console.log(err);
+        await logoutUser();
+        router.replace('/');
       } finally {
         setLoadingRole(false);
       }
@@ -41,9 +43,11 @@ export default function AppLayout() {
         screenOptions={{
           headerStyle: { backgroundColor: '#020617' },
           headerTintColor: '#fff',
-
-          headerRight: () => (
-            role && (
+          drawerStyle: { backgroundColor: '#111827' },
+          drawerActiveTintColor: '#06b6d4',
+          drawerInactiveTintColor: '#cbd5e1',
+          headerRight: () =>
+            role ? (
               <View
                 style={{
                   backgroundColor: role === 'teacher' ? '#a78bfa' : '#38bdf8',
@@ -57,11 +61,7 @@ export default function AppLayout() {
                   {role === 'teacher' ? 'Teacher' : 'Student'}
                 </Text>
               </View>
-            )
-          ),
-          drawerStyle: { backgroundColor: '#111827' },
-          drawerActiveTintColor: '#06b6d4',
-          drawerInactiveTintColor: '#cbd5e1',
+            ) : null,
         }}
         drawerContent={(props) => {
           const handleLogout = async () => {
@@ -69,28 +69,57 @@ export default function AppLayout() {
             router.replace('/');
           };
 
-          const filteredRoutes = props.state.routes.filter((route) => {
-            if (role === 'student') {
-              return !['teacher-bookings', 'my-lessons', 'create-lesson'].includes(route.name);
-            }
-
-            if (role === 'teacher') {
-              return !['bookings', 'learning'].includes(route.name);
-            }
-
-            return true;
-          });
-
           return (
             <DrawerContentScrollView {...props}>
-              <DrawerItemList
-                {...props}
-                state={{
-                  ...props.state,
-                  routes: filteredRoutes,
-                  routeNames: filteredRoutes.map((route) => route.name),
-                }}
+              <DrawerItem
+                label="Home"
+                labelStyle={{ color: '#cbd5e1', fontWeight: 'bold' }}
+                onPress={() => router.push('/home')}
               />
+
+              <DrawerItem
+                label="Profile"
+                labelStyle={{ color: '#cbd5e1', fontWeight: 'bold' }}
+                onPress={() => router.push('/profile')}
+              />
+
+              {role === 'student' && (
+                <>
+                  <DrawerItem
+                    label="My Learning"
+                    labelStyle={{ color: '#cbd5e1', fontWeight: 'bold' }}
+                    onPress={() => router.push('/learning')}
+                  />
+
+                  <DrawerItem
+                    label="My Bookings"
+                    labelStyle={{ color: '#cbd5e1', fontWeight: 'bold' }}
+                    onPress={() => router.push('/bookings')}
+                  />
+                </>
+              )}
+
+              {role === 'teacher' && (
+                <>
+                  <DrawerItem
+                    label="Teacher Bookings"
+                    labelStyle={{ color: '#cbd5e1', fontWeight: 'bold' }}
+                    onPress={() => router.push('/teacher-bookings')}
+                  />
+
+                  <DrawerItem
+                    label="My Lessons"
+                    labelStyle={{ color: '#cbd5e1', fontWeight: 'bold' }}
+                    onPress={() => router.push('/my-lessons')}
+                  />
+
+                  <DrawerItem
+                    label="Create Lesson"
+                    labelStyle={{ color: '#cbd5e1', fontWeight: 'bold' }}
+                    onPress={() => router.push('/create-lesson')}
+                  />
+                </>
+              )}
 
               <View style={{ padding: 16 }}>
                 <Pressable
@@ -118,8 +147,8 @@ export default function AppLayout() {
         <Drawer.Screen name="teacher-bookings" options={{ title: 'Teacher Bookings' }} />
         <Drawer.Screen name="my-lessons" options={{ title: 'My Lessons' }} />
         <Drawer.Screen name="lesson/[id]" options={{ title: 'Lesson Details', drawerItemStyle: { display: 'none' } }} />
-        <Drawer.Screen name="edit-profile" options={{ title: 'Edit Profile', drawerItemStyle: { display: 'none' } }} />
         <Drawer.Screen name="lesson/[id]/edit" options={{ title: 'Edit Lesson', drawerItemStyle: { display: 'none' } }} />
+        <Drawer.Screen name="edit-profile" options={{ title: 'Edit Profile', drawerItemStyle: { display: 'none' } }} />
       </Drawer>
 
       <StatusBar style="light" />
