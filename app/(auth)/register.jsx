@@ -137,6 +137,17 @@ export default function RegisterScreen() {
           backgroundColor: '#020617',
         }}
       >
+        <Text
+          style={{
+            fontSize: 32,
+            fontWeight: 'bold',
+            color: 'white',
+            marginBottom: 8,
+          }}
+        >
+          Skillvine
+        </Text>
+        
         <Text style={{ color: 'white', fontSize: 26, fontWeight: 'bold', marginBottom: 20 }}>
           Create Account
         </Text>

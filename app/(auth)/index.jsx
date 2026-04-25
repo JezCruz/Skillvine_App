@@ -96,7 +96,7 @@ export default function LoginScreen() {
       >
         <Text
           style={{
-            fontSize: 28,
+            fontSize: 32,
             fontWeight: 'bold',
             color: 'white',
             marginBottom: 8,
