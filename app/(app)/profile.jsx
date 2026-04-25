@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Text, ActivityIndicator } from 'react-native';
+import { Text, ActivityIndicator, ScrollView, RefreshControl } from 'react-native';
 import Screen from '../../components/Screen';
 import Card from '../../components/Card';
 import { fetchProfile } from '../../services/api';
@@ -9,6 +9,7 @@ import AppButton from '../../components/AppButton';
 export default function Profile() {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   const loadProfile = async () => {
     try {
@@ -24,6 +25,12 @@ export default function Profile() {
   useEffect(() => {
     loadProfile();
   }, []);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadProfile();
+    setRefreshing(false);
+  };
 
   if (loading) {
     return (
@@ -43,53 +50,51 @@ export default function Profile() {
 
   return (
     <Screen>
-      <Text style={{ color: 'white', fontSize: 26, fontWeight: 'bold', marginBottom: 20 }}>
-        Profile
-      </Text>
-
-      <Card>
-        <Text style={{ color: 'white', fontSize: 18, marginBottom: 8 }}>
-          👤 {profile.username}
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#06b6d4" />
+        }
+      >
+        <Text style={{ color: 'white', fontSize: 26, fontWeight: 'bold', marginBottom: 20 }}>
+          Profile
         </Text>
 
-        <Text style={{ color: '#94a3b8', marginBottom: 12 }}>
-          📧 {profile.email}
-        </Text>
+        <Card>
+          <Text style={{ color: 'white', fontSize: 18, marginBottom: 8 }}>
+            👤 {profile.username}
+          </Text>
 
-        {/* ROLE BADGE */}
-        <Text
-          style={{
-            alignSelf: 'flex-start',
-            backgroundColor: profile.role === 'teacher' ? '#a78bfa' : '#06b6d4',
-            color: '#000',
-            paddingHorizontal: 10,
-            paddingVertical: 4,
-            borderRadius: 8,
-            fontWeight: 'bold',
-            marginBottom: 12,
-          }}
-        >
-          {profile.role.toUpperCase()}
-        </Text>
+          <Text style={{ color: '#94a3b8', marginBottom: 12 }}>
+            📧 {profile.email}
+          </Text>
 
-        {/* COINS */}
-        <Text
-          style={{
-            color: '#22c55e',
-            fontSize: 18,
-            fontWeight: 'bold',
-          }}
-        >
-          💰 {profile.coins || 0} coins
-        </Text>
+          <Text
+            style={{
+              alignSelf: 'flex-start',
+              backgroundColor: profile.role === 'teacher' ? '#a78bfa' : '#06b6d4',
+              color: '#000',
+              paddingHorizontal: 10,
+              paddingVertical: 4,
+              borderRadius: 8,
+              fontWeight: 'bold',
+              marginBottom: 12,
+            }}
+          >
+            {profile.role.toUpperCase()}
+          </Text>
 
-        <AppButton
-          title="Edit Profile"
-          onPress={() => router.push('/edit-profile')}
-          variant="secondary"
-          style={{ marginTop: 16 }}
-        />
-      </Card>
+          <Text style={{ color: '#22c55e', fontSize: 18, fontWeight: 'bold' }}>
+            💰 {profile.coins || 0} coins
+          </Text>
+
+          <AppButton
+            title="Edit Profile"
+            onPress={() => router.push('/edit-profile')}
+            variant="secondary"
+            style={{ marginTop: 16 }}
+          />
+        </Card>
+      </ScrollView>
     </Screen>
   );
 }
