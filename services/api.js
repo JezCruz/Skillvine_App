@@ -231,3 +231,18 @@ export async function createLesson(data) {
 
   return result;
 }
+
+
+// LESSON OPTIONS
+export async function fetchMyLessons() {
+  const headers = await getAuthHeaders();
+
+  const res = await fetch(`${API_BASE}/my-lessons/`, { headers });
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.error || "Failed to fetch my lessons");
+  }
+
+  return data;
+}

@@ -53,11 +53,13 @@ export default function AppLayout() {
 
           const filteredRoutes = props.state.routes.filter((route) => {
             if (role === 'student') {
-              return route.name !== 'teacher-bookings';
+              return !['teacher-bookings', 'my-lessons', 'create-lesson'].includes(route.name);
             }
+
             if (role === 'teacher') {
-              return route.name !== 'bookings';
+              return !['bookings', 'learning'].includes(route.name);
             }
+
             return true;
           });
 
@@ -96,6 +98,7 @@ export default function AppLayout() {
         <Drawer.Screen name="learning" options={{ title: 'My Learning' }} />
         <Drawer.Screen name="bookings" options={{ title: 'My Bookings' }} />
         <Drawer.Screen name="teacher-bookings" options={{ title: 'Teacher Bookings' }} />
+        <Drawer.Screen name="my-lessons" options={{ title: 'My Lessons' }} />
         <Drawer.Screen name="lesson/[id]" options={{ title: 'Lesson Details', drawerItemStyle: { display: 'none' } }} />
         <Drawer.Screen name="edit-profile" options={{ title: 'Edit Profile', drawerItemStyle: { display: 'none' } }} />
       </Drawer>
