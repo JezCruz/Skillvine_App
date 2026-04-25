@@ -8,7 +8,11 @@ import { router } from 'expo-router';
 import { logoutUser, fetchProfile } from '../../services/api';
 import { useEffect, useState } from 'react';
 
+import useRealtimeNotifications from '../../hooks/useRealtimeNotifications';
+
 export default function AppLayout() {
+  useRealtimeNotifications();
+  
   const [role, setRole] = useState<string | null>(null);
   const [loadingRole, setLoadingRole] = useState(true);
 

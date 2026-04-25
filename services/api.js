@@ -302,3 +302,8 @@ export async function deleteLesson(id) {
   return data;
 }
 
+
+// Expo X Websocket Connection
+export async function getAccessToken() {
+  return await SecureStore.getItemAsync("access");
+}
