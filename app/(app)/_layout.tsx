@@ -41,6 +41,24 @@ export default function AppLayout() {
         screenOptions={{
           headerStyle: { backgroundColor: '#020617' },
           headerTintColor: '#fff',
+
+          headerRight: () => (
+            role && (
+              <View
+                style={{
+                  backgroundColor: role === 'teacher' ? '#a78bfa' : '#38bdf8',
+                  paddingHorizontal: 12,
+                  paddingVertical: 4,
+                  borderRadius: 20,
+                  marginRight: 12,
+                }}
+              >
+                <Text style={{ color: '#000', fontWeight: 'bold' }}>
+                  {role === 'teacher' ? 'Teacher' : 'Student'}
+                </Text>
+              </View>
+            )
+          ),
           drawerStyle: { backgroundColor: '#111827' },
           drawerActiveTintColor: '#06b6d4',
           drawerInactiveTintColor: '#cbd5e1',
