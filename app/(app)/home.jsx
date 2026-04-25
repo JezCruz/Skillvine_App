@@ -1,27 +1,29 @@
 import { useEffect, useState } from 'react';
-import { View, Text, FlatList, ActivityIndicator, Pressable } from 'react-native';
-import { fetchLessons, fetchProfile } from '../../services/api';
+import { Text, FlatList, ActivityIndicator, Pressable } from 'react-native';
 import { router } from 'expo-router';
-import EmptyState from '../../components/EmptyState';
+
+import Screen from '../../components/Screen';
+import Card from '../../components/Card';
 import AppButton from '../../components/AppButton';
+import EmptyState from '../../components/EmptyState';
+import { fetchLessons, fetchProfile } from '../../services/api';
 
 export default function Home() {
   const [lessons, setLessons] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [role, setRole] = useState(null);
   const [profile, setProfile] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
 
-  const loadData = async () => {
+  const loadData = async ({ showLoading = false } = {}) => {
     try {
+      if (showLoading) setLoading(true);
       setError(null);
 
       const lessonsData = await fetchLessons();
       const profileData = await fetchProfile();
 
       setLessons(lessonsData);
-      setRole(profileData.role);
       setProfile(profileData);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Something went wrong';
@@ -41,99 +43,58 @@ export default function Home() {
     setRefreshing(false);
   };
 
+  if (loading) {
+    return (
+      <Screen>
+        <ActivityIndicator size="large" color="#06b6d4" />
+      </Screen>
+    );
+  }
+
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: '#020617',
-        paddingTop: 20,
-        paddingHorizontal: 16,
-      }}
-    >
-      <Text
-        style={{
-          color: 'white',
-          fontSize: 28,
-          fontWeight: 'bold',
-          marginBottom: 20,
-        }}
-      >
+    <Screen>
+      <Text style={{ color: 'white', fontSize: 28, fontWeight: 'bold', marginBottom: 7 }}>
         Skillvine Lessons
       </Text>
 
-      {profile && (
-        <Text style={{ color: '#22c55e', marginBottom: 16 }}>
-          Coins: {profile.coins}
-        </Text>
-      )}
-
-      {role === 'student' && (
-        <Pressable
-          onPress={() => router.push('/bookings')}
-          style={{
-            backgroundColor: '#1e293b',
-            padding: 12,
-            borderRadius: 10,
-            marginBottom: 16,
-            alignSelf: 'flex-start',
-          }}
-        >
-          <Text style={{ color: 'white' }}>My Bookings</Text>
-        </Pressable>
-      )}
-
-      {role === 'teacher' && (
-        <Pressable
-          onPress={() => router.push('/teacher-bookings')}
-          style={{
-            backgroundColor: '#1e293b',
-            padding: 12,
-            borderRadius: 10,
-            marginBottom: 16,
-            alignSelf: 'flex-start',
-          }}
-        >
-          <Text style={{ color: 'white' }}>Teacher Bookings</Text>
-        </Pressable>
-      )}
-
-      {role === 'teacher' && (
+      {profile?.role === 'student' && (
         <AppButton
-          title="Create Lesson"
-          onPress={() => router.push('/create-lesson')}
-          style={{ marginBottom: 16, alignSelf: 'flex-start' }}
+          title="My Bookings"
+          onPress={() => router.push('/bookings')}
+          variant="secondary"
+          style={{ marginBottom: 12 }}
         />
       )}
 
-      {error && (
-        <View
-          style={{
-            backgroundColor: '#7f1d1d',
-            padding: 12,
-            borderRadius: 10,
-            marginBottom: 12,
-          }}
-        >
-          <Text style={{ color: 'white', marginBottom: 8 }}>
-            Cannot connect to server. Make sure backend is running.
-          </Text>
+      {profile?.role === 'teacher' && (
+        <>
+          <AppButton
+            title="Teacher Bookings"
+            onPress={() => router.push('/teacher-bookings')}
+            variant="secondary"
+            style={{ marginBottom: 12 }}
+          />
 
-          <Pressable
-            onPress={loadData}
-            style={{
-              backgroundColor: '#ef4444',
-              padding: 10,
-              borderRadius: 8,
-              alignItems: 'center',
-            }}
-          >
-            <Text style={{ color: 'white', fontWeight: 'bold' }}>Retry</Text>
-          </Pressable>
-        </View>
+          <AppButton
+            title="Create Lesson"
+            onPress={() => router.push('/create-lesson')}
+            style={{ marginBottom: 16 }}
+          />
+        </>
       )}
 
-      {loading ? (
-        <ActivityIndicator size="large" color="#06b6d4" />
+      {error ? (
+        <Card style={{ backgroundColor: '#7f1d1d' }}>
+          <Text style={{ color: 'white', marginBottom: 10 }}>
+            Cannot connect to server. Try again.
+          </Text>
+
+          <AppButton
+            title="Retry"
+            onPress={() => loadData({ showLoading: true })}
+            variant="danger"
+          />
+        </Card>
       ) : lessons.length === 0 ? (
         <EmptyState
           title="No lessons available"
@@ -141,44 +102,33 @@ export default function Home() {
         />
       ) : (
         <FlatList
-          refreshing={refreshing}
-          onRefresh={onRefresh}
           data={lessons}
           keyExtractor={(item) => String(item.id)}
+          refreshing={refreshing}
+          onRefresh={onRefresh}
           renderItem={({ item }) => (
-            <Pressable
-              onPress={() => router.push(`/lesson/${item.id}`)}
-              android_ripple={{ color: '#1f2937' }}
-              style={({ pressed }) => ({
-                backgroundColor: '#111827',
-                padding: 16,
-                borderRadius: 14,
-                marginBottom: 12,
-                opacity: pressed ? 0.85 : 1,
-              })}
-            >
-              <Text
-                style={{
-                  color: 'white',
-                  fontSize: 18,
-                  fontWeight: 'bold',
-                  marginBottom: 6,
-                }}
-              >
-                {item.title}
-              </Text>
+            <Pressable onPress={() => router.push(`/lesson/${item.id}`)}>
+              <Card>
+                <Text style={{ color: 'white', fontSize: 18, fontWeight: 'bold' }}>
+                  {item.title}
+                </Text>
 
-              <Text style={{ color: '#cbd5e1', marginBottom: 6 }}>
-                {item.description}
-              </Text>
+                <Text style={{ color: '#94a3b8', marginTop: 6 }}>
+                  {item.description || 'No description'}
+                </Text>
 
-              <Text style={{ color: '#22c55e' }}>
-                {item.price_coins} coins
-              </Text>
+                <Text style={{ color: '#22c55e', marginTop: 6 }}>
+                  {item.price_coins} coins
+                </Text>
+
+                <Text style={{ color: '#38bdf8', marginTop: 6 }}>
+                  Teacher: {item.teacher_username}
+                </Text>
+              </Card>
             </Pressable>
           )}
         />
       )}
-    </View>
+    </Screen>
   );
 }
