@@ -293,6 +293,12 @@ export default function RegisterScreen() {
           </Text>
         </Pressable>
 
+        <Pressable onPress={() => router.replace('/')}>
+            <Text style={{ color: '#38bdf8', marginTop: 16 }}>
+                Already have an account? Login
+            </Text>
+        </Pressable>
+
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
