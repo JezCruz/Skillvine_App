@@ -1,14 +1,18 @@
 import { useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator, Alert, Pressable } from 'react-native';
+import { Text, ActivityIndicator, ScrollView, RefreshControl } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
-import { fetchLessonById, createBooking } from '../../../services/api';
-import AppButton from '../../../components/AppButton';
 import Toast from 'react-native-toast-message';
+
+import Screen from '../../../components/Screen';
+import Card from '../../../components/Card';
+import AppButton from '../../../components/AppButton';
+import { fetchLessonById, createBooking } from '../../../services/api';
 
 export default function LessonDetails() {
   const { id } = useLocalSearchParams();
   const [lesson, setLesson] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [bookingLoading, setBookingLoading] = useState(false);
 
   const loadLesson = async () => {
@@ -16,8 +20,11 @@ export default function LessonDetails() {
       const data = await fetchLessonById(id);
       setLesson(data);
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Something went wrong';
-      Alert.alert('Error', message);
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: err instanceof Error ? err.message : 'Failed to load lesson',
+      });
     } finally {
       setLoading(false);
     }
@@ -27,6 +34,12 @@ export default function LessonDetails() {
     if (id) loadLesson();
   }, [id]);
 
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadLesson();
+    setRefreshing(false);
+  };
+
   const handleBookLesson = async () => {
     if (bookingLoading) return;
 
@@ -34,6 +47,7 @@ export default function LessonDetails() {
 
     try {
       await createBooking(Number(id));
+
       Toast.show({
         type: 'success',
         text1: 'Success',
@@ -52,12 +66,20 @@ export default function LessonDetails() {
       }
 
       if (message.includes('own lesson')) {
-        Alert.alert('Not allowed', 'You cannot book your own lesson.');
+        Toast.show({
+          type: 'error',
+          text1: 'Not allowed',
+          text2: 'You cannot book your own lesson.',
+        });
         return;
       }
 
       if (message.includes('Only students')) {
-        Alert.alert('Not allowed', 'Only students can book lessons.');
+        Toast.show({
+          type: 'error',
+          text1: 'Not allowed',
+          text2: 'Only students can book lessons.',
+        });
         return;
       }
 
@@ -71,76 +93,65 @@ export default function LessonDetails() {
     }
   };
 
-  return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: '#020617',
-        paddingTop: 60,
-        paddingHorizontal: 16,
-      }}
-    >
-      <Pressable
-        onPress={() => router.back()}
-        style={{
-          backgroundColor: '#1e293b',
-          alignSelf: 'flex-start',
-          paddingVertical: 10,
-          paddingHorizontal: 14,
-          borderRadius: 10,
-          marginBottom: 20,
-        }}
-      >
-        <Text style={{ color: 'white', fontWeight: 'bold' }}>Back</Text>
-      </Pressable>
-
-      {loading ? (
+  if (loading) {
+    return (
+      <Screen>
         <ActivityIndicator size="large" color="#06b6d4" />
-      ) : lesson ? (
-        <View
-          style={{
-            backgroundColor: '#111827',
-            borderRadius: 16,
-            padding: 18,
-          }}
-        >
-          <Text
-            style={{
-              color: 'white',
-              fontSize: 26,
-              fontWeight: 'bold',
-              marginBottom: 10,
-            }}
-          >
-            {lesson.title}
-          </Text>
+      </Screen>
+    );
+  }
 
-          <Text style={{ color: '#cbd5e1', marginBottom: 10 }}>
-            {lesson.description}
-          </Text>
+  return (
+    <Screen>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#06b6d4" />
+        }
+      >
+        <AppButton
+          title="Back"
+          onPress={() => router.back()}
+          variant="secondary"
+          style={{ alignSelf: 'flex-start', marginBottom: 20 }}
+        />
 
-          <Text style={{ color: '#93c5fd', marginBottom: 6 }}>
-            Category: {lesson.category}
-          </Text>
+        {lesson ? (
+          <Card>
+            <Text style={{ color: 'white', fontSize: 26, fontWeight: 'bold', marginBottom: 10 }}>
+              {lesson.title}
+            </Text>
 
-          <Text style={{ color: '#facc15', marginBottom: 6 }}>
-            Status: {lesson.status}
-          </Text>
+            <Text style={{ color: '#cbd5e1', marginBottom: 12 }}>
+              {lesson.description || 'No description'}
+            </Text>
 
-          <Text style={{ color: '#22c55e', fontSize: 16, fontWeight: 'bold' }}>
-            {lesson.price_coins} coins
-          </Text>
+            <Text style={{ color: '#93c5fd', marginBottom: 6 }}>
+              Category: {lesson.category}
+            </Text>
 
-          <AppButton
-            title={bookingLoading ? 'Booking...' : 'Book this lesson'}
-            onPress={handleBookLesson}
-            disabled={bookingLoading}
-            style={{ marginTop: 20 }}
-          />
-        </View>
-      ) : (
-        <Text style={{ color: 'white' }}>Lesson not found.</Text>
-      )}
-    </View>
+            <Text style={{ color: '#facc15', marginBottom: 6 }}>
+              Status: {lesson.status}
+            </Text>
+
+            <Text style={{ color: '#38bdf8', marginBottom: 6 }}>
+              Teacher: {lesson.teacher_username}
+            </Text>
+
+            <Text style={{ color: '#22c55e', fontSize: 16, fontWeight: 'bold' }}>
+              {lesson.price_coins} coins
+            </Text>
+
+            <AppButton
+              title={bookingLoading ? 'Booking...' : 'Book this lesson'}
+              onPress={handleBookLesson}
+              disabled={bookingLoading}
+              style={{ marginTop: 20 }}
+            />
+          </Card>
+        ) : (
+          <Text style={{ color: 'white' }}>Lesson not found.</Text>
+        )}
+      </ScrollView>
+    </Screen>
   );
 }
