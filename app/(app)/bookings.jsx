@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { Text, FlatList, ActivityIndicator } from 'react-native';
 
 import Screen from '../../components/Screen';
@@ -28,9 +29,17 @@ export default function MyBookings() {
     }
   };
 
-  useEffect(() => {
-    loadBookings();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      loadBookings();
+
+      const timer = setInterval(() => {
+        loadBookings();
+      }, 10000);
+
+      return () => clearInterval(timer);
+    }, [])
+  );
 
   const onRefresh = async () => {
     setRefreshing(true);
