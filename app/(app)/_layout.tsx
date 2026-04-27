@@ -5,10 +5,15 @@ import 'react-native-reanimated';
 import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import { View, Pressable, Text, ActivityIndicator, Alert, Linking } from 'react-native';
 import { router } from 'expo-router';
-import { logoutUser, fetchProfile, fetchAppVersion, getCurrentAppVersion } from '../../services/api';
-import { isNewerVersion } from '../../utils/version';
 import { useEffect, useState } from 'react';
 
+import {
+  logoutUser,
+  fetchProfile,
+  fetchAppVersion,
+  getCurrentAppVersion,
+} from '../../services/api';
+import { isNewerVersion } from '../../utils/version';
 import useRealtimeNotifications from '../../hooks/useRealtimeNotifications';
 
 export default function AppLayout() {
@@ -22,45 +27,53 @@ export default function AppLayout() {
       const currentVersion = getCurrentAppVersion();
       const data = await fetchAppVersion();
 
-      if (isNewerVersion(data.latest_version, currentVersion)) {
-        if (data.force_update) {
-          Alert.alert(
-            "Update Required",
-            `You must update to version ${data.latest_version} to continue.`,
-            [
-              {
-                text: "Update Now",
-                onPress: () => Linking.openURL(data.apk_url),
-              },
-            ],
-            { cancelable: false }
-          );
+      if (!data?.latest_version || !data?.apk_url) {
+        return;
+      }
 
-          return; // 🔥 stop here
-        }
+      const hasUpdate = isNewerVersion(data.latest_version, currentVersion);
 
+      if (!hasUpdate) {
+        return;
+      }
+
+      if (data.force_update) {
         Alert.alert(
-          "Update Available",
-          `New version ${data.latest_version} is available.`,
+          'Update Required',
+          `You must update to version ${data.latest_version} to continue.`,
           [
             {
-              text: "Later",
-              style: "cancel",
-            },
-            {
-              text: "Update Now",
+              text: 'Update Now',
               onPress: () => Linking.openURL(data.apk_url),
             },
-          ]
+          ],
+          { cancelable: false }
         );
+
+        return;
       }
+
+      Alert.alert(
+        'Update Available',
+        `New version ${data.latest_version} is available.`,
+        [
+          {
+            text: 'Later',
+            style: 'cancel',
+          },
+          {
+            text: 'Update Now',
+            onPress: () => Linking.openURL(data.apk_url),
+          },
+        ]
+      );
     } catch (err) {
       console.log('Update check failed:', err);
     }
   };
 
   useEffect(() => {
-    const loadProfile = async () => {
+    const init = async () => {
       try {
         const profile = await fetchProfile();
         setRole(profile.role);
@@ -71,10 +84,11 @@ export default function AppLayout() {
       } finally {
         setLoadingRole(false);
       }
+
+      await checkForUpdate();
     };
 
-    loadProfile();
-    checkForUpdate();
+    init();
   }, []);
 
   if (loadingRole) {
