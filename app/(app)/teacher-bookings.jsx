@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Text, FlatList, ActivityIndicator, View } from 'react-native';
 import Toast from 'react-native-toast-message';
+import { useFocusEffect } from '@react-navigation/native';
 
 import Screen from '../../components/Screen';
 import Card from '../../components/Card';
@@ -30,9 +31,17 @@ export default function TeacherBookings() {
     }
   };
 
-  useEffect(() => {
-    loadBookings();
-  }, []);
+    useFocusEffect(
+      useCallback(() => {
+        loadBookings();
+  
+        const timer = setInterval(() => {
+          loadBookings();
+        }, 10000);
+  
+        return () => clearInterval(timer);
+      }, [])
+    );
 
   const onRefresh = async () => {
     setRefreshing(true);
