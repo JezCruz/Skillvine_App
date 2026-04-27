@@ -13,9 +13,45 @@ import useRealtimeNotifications from '../../hooks/useRealtimeNotifications';
 
 export default function AppLayout() {
   useRealtimeNotifications();
-  
+
   const [role, setRole] = useState<string | null>(null);
   const [loadingRole, setLoadingRole] = useState(true);
+
+  const checkForUpdate = async () => {
+    try {
+      const currentVersion = getCurrentAppVersion();
+      const data = await fetchAppVersion();
+
+      if (isNewerVersion(data.latest_version, currentVersion)) {
+        const buttons = data.force_update
+          ? [
+              {
+                text: 'Update Now',
+                onPress: () => Linking.openURL(data.apk_url),
+              },
+            ]
+          : [
+              {
+                text: 'Later',
+                style: 'cancel' as const,
+              },
+              {
+                text: 'Update Now',
+                onPress: () => Linking.openURL(data.apk_url),
+              },
+            ];
+
+        Alert.alert(
+          data.force_update ? 'Update Required' : 'Update Available',
+          `New version ${data.latest_version} is available.`,
+          buttons,
+          { cancelable: !data.force_update }
+        );
+      }
+    } catch (err) {
+      console.log('Update check failed:', err);
+    }
+  };
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -33,7 +69,6 @@ export default function AppLayout() {
 
     loadProfile();
     checkForUpdate();
-    
   }, []);
 
   if (loadingRole) {
@@ -43,42 +78,6 @@ export default function AppLayout() {
       </View>
     );
   }
-
-  const checkForUpdate = async () => {
-    try {
-      const currentVersion = getCurrentAppVersion();
-      const data = await fetchAppVersion();
-
-      if (isNewerVersion(data.latest_version, currentVersion)) {
-        const buttons = data.force_update
-          ? [
-              {
-                text: "Update Now",
-                onPress: () => Linking.openURL(data.apk_url),
-              },
-            ]
-          : [
-              {
-                text: "Later",
-                style: "cancel" as const,
-              },
-              {
-                text: "Update Now",
-                onPress: () => Linking.openURL(data.apk_url),
-              },
-            ];
-
-        Alert.alert(
-          data.force_update ? "Update Required" : "Update Available",
-          `New version ${data.latest_version} is available.`,
-          buttons,
-          { cancelable: !data.force_update }
-        );
-      }
-    } catch (err) {
-      console.log("Update check failed:", err);
-    }
-  };
 
   return (
     <>
@@ -164,6 +163,12 @@ export default function AppLayout() {
                 </>
               )}
 
+              <DrawerItem
+                label="Updates"
+                labelStyle={{ color: '#cbd5e1', fontWeight: 'bold' }}
+                onPress={() => router.push('/updates' as any)}
+              />
+
               <View style={{ padding: 16 }}>
                 <Pressable
                   onPress={handleLogout}
@@ -192,7 +197,7 @@ export default function AppLayout() {
         <Drawer.Screen name="lesson/[id]" options={{ title: 'Lesson Details', drawerItemStyle: { display: 'none' } }} />
         <Drawer.Screen name="lesson/[id]/edit" options={{ title: 'Edit Lesson', drawerItemStyle: { display: 'none' } }} />
         <Drawer.Screen name="edit-profile" options={{ title: 'Edit Profile', drawerItemStyle: { display: 'none' } }} />
-        <Drawer.Screen name="updates" options={{ title: "Updates" }} />
+        <Drawer.Screen name="updates" options={{ title: 'Updates' }} />
       </Drawer>
 
       <StatusBar style="light" />
