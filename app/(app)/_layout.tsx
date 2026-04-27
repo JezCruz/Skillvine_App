@@ -50,19 +50,29 @@ export default function AppLayout() {
       const data = await fetchAppVersion();
 
       if (isNewerVersion(data.latest_version, currentVersion)) {
+        const buttons = data.force_update
+          ? [
+              {
+                text: "Update Now",
+                onPress: () => Linking.openURL(data.apk_url),
+              },
+            ]
+          : [
+              {
+                text: "Later",
+                style: "cancel" as const,
+              },
+              {
+                text: "Update Now",
+                onPress: () => Linking.openURL(data.apk_url),
+              },
+            ];
+
         Alert.alert(
-          "🚀 Update Available",
-          `New version ${data.latest_version} is available`,
-          [
-            {
-              text: "Later",
-              style: "cancel"
-            },
-            {
-              text: "Update Now",
-              onPress: () => Linking.openURL(data.apk_url)
-            }
-          ]
+          data.force_update ? "Update Required" : "Update Available",
+          `New version ${data.latest_version} is available.`,
+          buttons,
+          { cancelable: !data.force_update }
         );
       }
     } catch (err) {
