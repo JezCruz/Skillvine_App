@@ -1,6 +1,6 @@
 import * as SecureStore from 'expo-secure-store';
 
-const API_BASE = "http://161.118.201.149/api";
+const API_BASE = "http://skillvines.com/api";
 
 
 // FETCH HELPER
