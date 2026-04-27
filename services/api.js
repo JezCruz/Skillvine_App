@@ -1,6 +1,25 @@
 import * as SecureStore from 'expo-secure-store';
+import * as Application from 'expo-application';
+
 
 const API_BASE = "http://skillvines.com/api";
+
+
+// App Version Checker
+export const getCurrentAppVersion = () => {
+  return Application.nativeApplicationVersion || '1.0.0';
+};
+
+export const fetchAppVersion = async () => {
+  const res = await fetch(`${API_BASE}/app-version/`);
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.error || 'Failed to check app version');
+  }
+
+  return data;
+};
 
 
 // FETCH HELPER
