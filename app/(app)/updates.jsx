@@ -70,7 +70,14 @@ export default function Updates() {
                     },
                     {
                       text: 'Install Now',
-                      onPress: () => Linking.openURL(result.uri),
+                      onPress: async () => {
+                        try {
+                          await Linking.openURL(result.uri);
+                        } catch (err) {
+                          console.log('Open installer failed:', err);
+                          Linking.openURL(data.apk_url);
+                        }
+                      },
                     },
                   ]
                 );
