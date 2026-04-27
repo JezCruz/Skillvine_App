@@ -3,9 +3,10 @@ import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
 import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
-import { View, Pressable, Text, ActivityIndicator } from 'react-native';
+import { View, Pressable, Text, ActivityIndicator, Alert, Linking } from 'react-native';
 import { router } from 'expo-router';
-import { logoutUser, fetchProfile } from '../../services/api';
+import { logoutUser, fetchProfile, fetchAppVersion, getCurrentAppVersion } from '../../services/api';
+import { isNewerVersion } from '../../utils/version';
 import { useEffect, useState } from 'react';
 
 import useRealtimeNotifications from '../../hooks/useRealtimeNotifications';
@@ -31,6 +32,8 @@ export default function AppLayout() {
     };
 
     loadProfile();
+    checkForUpdate();
+    
   }, []);
 
   if (loadingRole) {
@@ -40,6 +43,32 @@ export default function AppLayout() {
       </View>
     );
   }
+
+  const checkForUpdate = async () => {
+    try {
+      const currentVersion = getCurrentAppVersion();
+      const data = await fetchAppVersion();
+
+      if (isNewerVersion(data.latest_version, currentVersion)) {
+        Alert.alert(
+          "🚀 Update Available",
+          `New version ${data.latest_version} is available`,
+          [
+            {
+              text: "Later",
+              style: "cancel"
+            },
+            {
+              text: "Update Now",
+              onPress: () => Linking.openURL(data.apk_url)
+            }
+          ]
+        );
+      }
+    } catch (err) {
+      console.log("Update check failed:", err);
+    }
+  };
 
   return (
     <>
