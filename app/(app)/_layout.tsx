@@ -23,29 +23,35 @@ export default function AppLayout() {
       const data = await fetchAppVersion();
 
       if (isNewerVersion(data.latest_version, currentVersion)) {
-        const buttons = data.force_update
-          ? [
+        if (data.force_update) {
+          Alert.alert(
+            "Update Required",
+            `You must update to version ${data.latest_version} to continue.`,
+            [
               {
-                text: 'Update Now',
+                text: "Update Now",
                 onPress: () => Linking.openURL(data.apk_url),
               },
-            ]
-          : [
-              {
-                text: 'Later',
-                style: 'cancel' as const,
-              },
-              {
-                text: 'Update Now',
-                onPress: () => Linking.openURL(data.apk_url),
-              },
-            ];
+            ],
+            { cancelable: false }
+          );
+
+          return; // 🔥 stop here
+        }
 
         Alert.alert(
-          data.force_update ? 'Update Required' : 'Update Available',
+          "Update Available",
           `New version ${data.latest_version} is available.`,
-          buttons,
-          { cancelable: !data.force_update }
+          [
+            {
+              text: "Later",
+              style: "cancel",
+            },
+            {
+              text: "Update Now",
+              onPress: () => Linking.openURL(data.apk_url),
+            },
+          ]
         );
       }
     } catch (err) {
