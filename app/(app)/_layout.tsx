@@ -184,7 +184,7 @@ export default function AppLayout() {
               )}
 
               <DrawerItem
-                label="Updates"
+                label="Check Latest Updates"
                 labelStyle={{ color: '#cbd5e1', fontWeight: 'bold' }}
                 onPress={() => router.push('/updates' as any)}
               />
