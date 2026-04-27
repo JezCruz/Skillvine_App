@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Text, FlatList, ActivityIndicator, Pressable } from 'react-native';
 import { router } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
 
 import Screen from '../../components/Screen';
 import Card from '../../components/Card';
@@ -33,9 +34,17 @@ export default function Home() {
     }
   };
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      loadData();
+
+      const timer = setInterval(() => {
+        loadData();
+      }, 10000); // every 10 seconds
+
+      return () => clearInterval(timer);
+    }, [])
+  );
 
   const onRefresh = async () => {
     setRefreshing(true);
