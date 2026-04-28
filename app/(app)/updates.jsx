@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Text, Linking, Alert } from 'react-native';
 import * as FileSystem from 'expo-file-system/legacy';
+import * as IntentLauncher from 'expo-intent-launcher';
 
 import Screen from '../../components/Screen';
 import Card from '../../components/Card';
@@ -83,14 +84,33 @@ export default function Updates() {
                 );
               }
             } catch (err) {
-              console.log('Download failed:', err);
-              setDownloading(false);
+                console.log('Open installer failed:', err);
 
-              Alert.alert(
-                'Download Failed',
-                'Could not download the update. Please try again.'
-              );
-            }
+                Alert.alert(
+                  'Permission Required',
+                  'Allow Skillvine to install unknown apps to continue.',
+                  [
+                    { text: 'Cancel', style: 'cancel' },
+                    {
+                      text: 'Open Settings',
+                      onPress: async () => {
+                        try {
+                          await IntentLauncher.startActivityAsync(
+                            'android.settings.MANAGE_UNKNOWN_APP_SOURCES'
+                          );
+                        } catch (e) {
+                          console.log('Settings open failed:', e);
+                          Linking.openURL(data.apk_url);
+                        }
+                      },
+                    },
+                    {
+                      text: 'Download via Browser',
+                      onPress: () => Linking.openURL(data.apk_url),
+                    },
+                  ]
+                );
+              }
           },
         },
       ]
