@@ -184,6 +184,12 @@ export default function AppLayout() {
               )}
 
               <DrawerItem
+                label="Notifications"
+                labelStyle={{ color: '#cbd5e1', fontWeight: 'bold' }}
+                onPress={() => router.push('/notifications' as any)}
+              />
+
+              <DrawerItem
                 label="Check Latest Updates"
                 labelStyle={{ color: '#cbd5e1', fontWeight: 'bold' }}
                 onPress={() => router.push('/updates' as any)}
@@ -216,6 +222,7 @@ export default function AppLayout() {
         <Drawer.Screen name="my-lessons" options={{ title: 'My Lessons' }} />
         <Drawer.Screen name="lesson/[id]" options={{ title: 'Lesson Details', drawerItemStyle: { display: 'none' } }} />
         <Drawer.Screen name="lesson/[id]/edit" options={{ title: 'Edit Lesson', drawerItemStyle: { display: 'none' } }} />
+        <Drawer.Screen name="notifications" options={{ title: 'Notifications' }} />
         <Drawer.Screen name="edit-profile" options={{ title: 'Edit Profile', drawerItemStyle: { display: 'none' } }} />
         <Drawer.Screen name="updates" options={{ title: 'App Updates' }} />
       </Drawer>

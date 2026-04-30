@@ -326,3 +326,35 @@ export async function deleteLesson(id) {
 export async function getAccessToken() {
   return await SecureStore.getItemAsync("access");
 }
+
+
+// Notifications
+export async function fetchNotifications() {
+  const headers = await getAuthHeaders();
+
+  const res = await fetch(`${API_BASE}/notifications/`, { headers });
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.error || 'Failed to fetch notifications');
+  }
+
+  return data;
+}
+
+export async function markNotificationRead(id) {
+  const headers = await getAuthHeaders();
+
+  const res = await fetch(`${API_BASE}/notifications/${id}/read/`, {
+    method: 'POST',
+    headers,
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.error || 'Failed to mark notification as read');
+  }
+
+  return data;
+}
